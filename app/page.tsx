@@ -102,6 +102,27 @@ const whyUsHighlights = [
   },
 ];
 
+const testimonials = [
+  {
+    quote:
+      "ZF Resumes completely transformed how I communicated my internship impact. I landed first-round interviews at two consulting firms within three weeks.",
+    name: "Temple University Senior",
+    role: "Finance Major",
+  },
+  {
+    quote:
+      "The rewrite was sharp, quantified, and recruiter-friendly. I started getting LinkedIn responses almost immediately after updating my profile.",
+    name: "Recent Graduate",
+    role: "Entry-Level Analyst Candidate",
+  },
+  {
+    quote:
+      "Our fraternity workshop was practical and high-energy. Members left with clear resume frameworks and better interview confidence.",
+    name: "Fraternity Career Chair",
+    role: "Philadelphia Campus Organization",
+  },
+];
+
 type IntakeData = {
   fullName: string;
   email: string;
@@ -379,6 +400,37 @@ export default function Home() {
                 </article>
               ))}
             </div>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-6xl px-6 py-20">
+          <div className="mb-10 flex flex-wrap items-center justify-between gap-4">
+            <h2 className="text-3xl font-semibold text-white sm:text-4xl">
+              Client Testimonials
+            </h2>
+            <p className="text-sm font-medium text-cyan-300">
+              Real outcomes from Philadelphia students and grads
+            </p>
+          </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {testimonials.map((testimonial) => (
+              <article
+                key={testimonial.quote}
+                className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6"
+              >
+                <p className="mb-5 text-sm leading-relaxed text-slate-200">
+                  &ldquo;{testimonial.quote}&rdquo;
+                </p>
+                <div className="border-t border-slate-700 pt-4">
+                  <p className="text-sm font-semibold text-white">
+                    {testimonial.name}
+                  </p>
+                  <p className="text-xs uppercase tracking-[0.12em] text-slate-400">
+                    {testimonial.role}
+                  </p>
+                </div>
+              </article>
+            ))}
           </div>
         </section>
 
