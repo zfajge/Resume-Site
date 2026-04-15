@@ -9,7 +9,7 @@ import {
   Clock3,
   GraduationCap,
   Handshake,
-  Linkedin,
+  Link2,
   Mail,
   MapPin,
   Phone,
@@ -218,7 +218,7 @@ export default function Home() {
           <div className="relative mx-auto flex max-w-6xl flex-col gap-14 px-6 py-20 md:py-28">
             <div className="inline-flex w-fit items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-300/10 px-4 py-2 text-sm font-medium text-cyan-200">
               <Sparkles className="h-4 w-4" />
-              Philadelphia's student-first career acceleration studio
+              Philadelphia&apos;s student-first career acceleration studio
             </div>
 
             <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
@@ -646,7 +646,7 @@ export default function Home() {
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-slate-200 transition hover:text-cyan-300"
             >
-              <Linkedin className="h-4 w-4" />
+              <Link2 className="h-4 w-4" />
               LinkedIn
             </a>
             <a
