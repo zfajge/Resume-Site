@@ -5,8 +5,10 @@ import {
   ArrowRight,
   BadgeCheck,
   Building2,
+  Calculator,
   CheckCircle2,
   Clock3,
+  DollarSign,
   GraduationCap,
   Handshake,
   Link2,
@@ -123,6 +125,76 @@ const testimonials = [
   },
 ];
 
+type EstimateTrack = "individual" | "group";
+
+type IndividualEstimateOption = {
+  label: string;
+  regularPrice: number;
+  studentPrice: number;
+};
+
+type WorkshopEstimateOption = {
+  label: string;
+  basePrice: number;
+  maxGroupSize: number;
+  startsAt: boolean;
+};
+
+const individualEstimateOptions: Record<string, IndividualEstimateOption> = {
+  review: {
+    label: "Resume Review + Written Feedback",
+    regularPrice: 60,
+    studentPrice: 30,
+  },
+  rewrite: {
+    label: "Full Resume Rewrite",
+    regularPrice: 125,
+    studentPrice: 62.5,
+  },
+  linkedin: {
+    label: "LinkedIn Optimization",
+    regularPrice: 60,
+    studentPrice: 30,
+  },
+  bundle: {
+    label: "Resume + LinkedIn Bundle",
+    regularPrice: 185,
+    studentPrice: 92.5,
+  },
+};
+
+const workshopEstimateOptions: Record<string, WorkshopEstimateOption> = {
+  virtual: {
+    label: "Virtual Workshop",
+    basePrice: 300,
+    maxGroupSize: 20,
+    startsAt: false,
+  },
+  virtualReviews: {
+    label: "Virtual Workshop + Email Reviews",
+    basePrice: 450,
+    maxGroupSize: 20,
+    startsAt: false,
+  },
+  inPerson: {
+    label: "In-Person Session",
+    basePrice: 600,
+    maxGroupSize: 30,
+    startsAt: true,
+  },
+  inPersonReviews: {
+    label: "In-Person + Email Reviews",
+    basePrice: 800,
+    maxGroupSize: 30,
+    startsAt: true,
+  },
+};
+
+const usdFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
+
 type IntakeData = {
   fullName: string;
   email: string;
@@ -169,6 +241,12 @@ export default function Home() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [intakeData, setIntakeData] = useState<IntakeData>(initialIntakeData);
+  const [estimateTrack, setEstimateTrack] = useState<EstimateTrack>("individual");
+  const [isStudentEstimate, setIsStudentEstimate] = useState(true);
+  const [individualServiceKey, setIndividualServiceKey] = useState("rewrite");
+  const [addCoverLetter, setAddCoverLetter] = useState(false);
+  const [workshopPackageKey, setWorkshopPackageKey] = useState("virtual");
+  const [workshopGroupSize, setWorkshopGroupSize] = useState("20");
 
   const companies = useMemo(
     () => [
@@ -181,6 +259,31 @@ export default function Home() {
     ],
     []
   );
+
+  const selectedIndividualEstimate =
+    individualEstimateOptions[individualServiceKey] ??
+    individualEstimateOptions.rewrite;
+  const selectedWorkshopEstimate =
+    workshopEstimateOptions[workshopPackageKey] ?? workshopEstimateOptions.virtual;
+
+  const regularBasePrice = selectedIndividualEstimate.regularPrice;
+  const studentBasePrice = selectedIndividualEstimate.studentPrice;
+  const selectedBasePrice = isStudentEstimate ? studentBasePrice : regularBasePrice;
+  const coverLetterPrice = addCoverLetter ? (isStudentEstimate ? 20 : 40) : 0;
+  const regularCoverLetterPrice = addCoverLetter ? 40 : 0;
+  const individualEstimateTotal = selectedBasePrice + coverLetterPrice;
+  const studentSavings =
+    regularBasePrice + regularCoverLetterPrice - individualEstimateTotal;
+
+  const parsedGroupSize = Number.parseInt(workshopGroupSize, 10);
+  const normalizedGroupSize = Number.isNaN(parsedGroupSize)
+    ? 0
+    : Math.max(parsedGroupSize, 0);
+  const exceedsIncludedGroupSize =
+    normalizedGroupSize > selectedWorkshopEstimate.maxGroupSize;
+  const groupEstimateText = selectedWorkshopEstimate.startsAt
+    ? `Starting at ${usdFormatter.format(selectedWorkshopEstimate.basePrice)}`
+    : usdFormatter.format(selectedWorkshopEstimate.basePrice);
 
   const updateField = (field: keyof IntakeData, value: string) => {
     setIntakeData((prev) => ({ ...prev, [field]: value }));
@@ -378,6 +481,228 @@ export default function Home() {
                 </table>
               </div>
             </article>
+          </div>
+        </section>
+
+        <section
+          id="cost-estimator"
+          className="mx-auto max-w-6xl border-y border-slate-800 px-6 py-20"
+        >
+          <div className="mb-10">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200">
+              <Calculator className="h-4 w-4" />
+              Cost Estimate Calculator
+            </div>
+            <h2 className="mb-3 text-3xl font-semibold text-white sm:text-4xl">
+              Get an instant estimate before you book
+            </h2>
+            <p className="max-w-3xl text-slate-300">
+              Answer a few questions and see your estimated investment. Final
+              pricing is confirmed after intake review, especially for custom
+              workshop requests and larger groups.
+            </p>
+          </div>
+
+          <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+            <article className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 md:p-8">
+              <div className="mb-6 flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => setEstimateTrack("individual")}
+                  className={`rounded-full px-5 py-2.5 text-sm font-semibold transition ${
+                    estimateTrack === "individual"
+                      ? "bg-cyan-400 text-slate-950"
+                      : "border border-slate-600 text-slate-200 hover:border-cyan-300 hover:text-cyan-200"
+                  }`}
+                >
+                  Individual Services
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEstimateTrack("group")}
+                  className={`rounded-full px-5 py-2.5 text-sm font-semibold transition ${
+                    estimateTrack === "group"
+                      ? "bg-cyan-400 text-slate-950"
+                      : "border border-slate-600 text-slate-200 hover:border-cyan-300 hover:text-cyan-200"
+                  }`}
+                >
+                  Group Workshops
+                </button>
+              </div>
+
+              {estimateTrack === "individual" ? (
+                <div className="space-y-5">
+                  <label className="space-y-2 text-sm">
+                    <span className="font-medium text-slate-200">
+                      Which service are you most interested in?
+                    </span>
+                    <select
+                      value={individualServiceKey}
+                      onChange={(event) => setIndividualServiceKey(event.target.value)}
+                      className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-3 py-2.5 text-slate-100 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-400/20"
+                    >
+                      <option value="review">
+                        {individualEstimateOptions.review.label}
+                      </option>
+                      <option value="rewrite">
+                        {individualEstimateOptions.rewrite.label}
+                      </option>
+                      <option value="linkedin">
+                        {individualEstimateOptions.linkedin.label}
+                      </option>
+                      <option value="bundle">
+                        {individualEstimateOptions.bundle.label}
+                      </option>
+                    </select>
+                  </label>
+                  <label className="space-y-2 text-sm">
+                    <span className="font-medium text-slate-200">
+                      Student discount eligibility
+                    </span>
+                    <select
+                      value={isStudentEstimate ? "student" : "regular"}
+                      onChange={(event) =>
+                        setIsStudentEstimate(event.target.value === "student")
+                      }
+                      className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-3 py-2.5 text-slate-100 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-400/20"
+                    >
+                      <option value="student">
+                        Yes - I have a valid .edu email
+                      </option>
+                      <option value="regular">No - regular pricing applies</option>
+                    </select>
+                  </label>
+
+                  <label className="flex items-start gap-3 rounded-xl border border-slate-700 bg-slate-950/70 p-4 text-sm text-slate-200">
+                    <input
+                      type="checkbox"
+                      checked={addCoverLetter}
+                      onChange={(event) => setAddCoverLetter(event.target.checked)}
+                      className="mt-0.5 h-4 w-4 rounded border-slate-600 bg-slate-900 text-cyan-400 focus:ring-cyan-400/40"
+                    />
+                    <span>
+                      Add a role-targeted cover letter
+                      <span className="block text-xs text-slate-400">
+                        +{isStudentEstimate ? "$20" : "$40"} add-on
+                      </span>
+                    </span>
+                  </label>
+                </div>
+              ) : (
+                <div className="space-y-5">
+                  <label className="space-y-2 text-sm">
+                    <span className="font-medium text-slate-200">
+                      Workshop package
+                    </span>
+                    <select
+                      value={workshopPackageKey}
+                      onChange={(event) => setWorkshopPackageKey(event.target.value)}
+                      className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-3 py-2.5 text-slate-100 outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-400/20"
+                    >
+                      <option value="virtual">
+                        {workshopEstimateOptions.virtual.label}
+                      </option>
+                      <option value="virtualReviews">
+                        {workshopEstimateOptions.virtualReviews.label}
+                      </option>
+                      <option value="inPerson">
+                        {workshopEstimateOptions.inPerson.label}
+                      </option>
+                      <option value="inPersonReviews">
+                        {workshopEstimateOptions.inPersonReviews.label}
+                      </option>
+                    </select>
+                  </label>
+                  <label className="space-y-2 text-sm">
+                    <span className="font-medium text-slate-200">
+                      Estimated group size
+                    </span>
+                    <input
+                      type="number"
+                      min={1}
+                      value={workshopGroupSize}
+                      onChange={(event) => setWorkshopGroupSize(event.target.value)}
+                      placeholder="20"
+                      className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-3 py-2.5 text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-cyan-300 focus:ring-2 focus:ring-cyan-400/20"
+                    />
+                  </label>
+                  <p className="text-xs text-slate-400">
+                    Student discount does not apply to workshop packages.
+                  </p>
+                </div>
+              )}
+            </article>
+
+            <aside className="rounded-3xl border border-cyan-400/30 bg-gradient-to-br from-slate-900 to-blue-950/40 p-6 md:p-7">
+              <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200">
+                <DollarSign className="h-4 w-4" />
+                Estimated Cost
+              </p>
+
+              {estimateTrack === "individual" ? (
+                <div className="space-y-4">
+                  <p className="text-lg font-semibold text-white">
+                    {selectedIndividualEstimate.label}
+                  </p>
+                  <div className="space-y-2 rounded-xl border border-slate-700 bg-slate-950/70 p-4 text-sm text-slate-200">
+                    <div className="flex items-center justify-between">
+                      <span>Base service</span>
+                      <span>{usdFormatter.format(selectedBasePrice)}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span>Cover letter add-on</span>
+                      <span>{usdFormatter.format(coverLetterPrice)}</span>
+                    </div>
+                    <div className="mt-2 border-t border-slate-700 pt-2" />
+                    <div className="flex items-center justify-between text-base font-semibold text-white">
+                      <span>Estimated total</span>
+                      <span>{usdFormatter.format(individualEstimateTotal)}</span>
+                    </div>
+                  </div>
+                  {isStudentEstimate && studentSavings > 0 && (
+                    <p className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-300">
+                      You save {usdFormatter.format(studentSavings)} with the 50%
+                      student discount.
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <p className="text-lg font-semibold text-white">
+                    {selectedWorkshopEstimate.label}
+                  </p>
+                  <div className="space-y-2 rounded-xl border border-slate-700 bg-slate-950/70 p-4 text-sm text-slate-200">
+                    <div className="flex items-center justify-between">
+                      <span>Group size entered</span>
+                      <span>{normalizedGroupSize || "Not provided"}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span>Price estimate</span>
+                      <span className="font-semibold text-white">{groupEstimateText}</span>
+                    </div>
+                  </div>
+                  {exceedsIncludedGroupSize ? (
+                    <p className="rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-200">
+                      Groups above {selectedWorkshopEstimate.maxGroupSize} require
+                      custom pricing.
+                    </p>
+                  ) : (
+                    <p className="rounded-xl border border-slate-700 bg-slate-950/60 px-3 py-2 text-sm text-slate-300">
+                      This estimate includes the base package for up to{" "}
+                      {selectedWorkshopEstimate.maxGroupSize} attendees.
+                    </p>
+                  )}
+                </div>
+              )}
+
+              <a
+                href="#intake-form"
+                className="mt-6 inline-flex items-center gap-2 rounded-full bg-cyan-400 px-5 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300"
+              >
+                Continue to Intake
+                <ArrowRight className="h-4 w-4" />
+              </a>
+            </aside>
           </div>
         </section>
 
