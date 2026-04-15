@@ -248,6 +248,12 @@ export default function Home() {
                   >
                     View Services
                   </a>
+                  <a
+                    href="/ai-creator"
+                    className="inline-flex items-center gap-2 rounded-full border border-emerald-400/50 px-6 py-3 text-sm font-semibold text-emerald-200 transition hover:border-emerald-300 hover:text-emerald-100"
+                  >
+                    Try AI Resume Builder
+                  </a>
                 </div>
               </div>
 
