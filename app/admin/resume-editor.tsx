@@ -147,13 +147,31 @@ export function ResumeEditor({ content, onChange }: Props) {
         value={content.fullName}
         onChange={(e) => update({ fullName: e.target.value })}
       />
-      {/* Contact */}
+      {/* Contact line (location | phone) */}
       <input
         className="ef"
-        style={{ textAlign: "center", fontSize: "10pt", color: "#555", display: "block", marginBottom: "6pt" }}
+        style={{ textAlign: "center", fontSize: "10pt", color: "#555", display: "block", marginBottom: "2pt" }}
         value={content.contactLine}
         onChange={(e) => update({ contactLine: e.target.value })}
+        placeholder="City, ST | phone"
       />
+      {/* Email & LinkedIn */}
+      <div style={{ display: "flex", justifyContent: "center", gap: "12pt", marginBottom: "6pt" }}>
+        <input
+          className="ef"
+          style={{ fontSize: "10pt", color: "#4a9a9a", textDecoration: "underline", textAlign: "center", width: "auto", maxWidth: "200px" }}
+          value={content.email ?? ""}
+          onChange={(e) => update({ email: e.target.value })}
+          placeholder="email@example.com"
+        />
+        <input
+          className="ef"
+          style={{ fontSize: "10pt", color: "#4a9a9a", textDecoration: "underline", textAlign: "center", width: "auto", maxWidth: "250px" }}
+          value={content.linkedinUrl ?? ""}
+          onChange={(e) => update({ linkedinUrl: e.target.value })}
+          placeholder="https://linkedin.com/in/name"
+        />
+      </div>
 
       {/* Sections */}
       {content.sections.map((section, si) => (

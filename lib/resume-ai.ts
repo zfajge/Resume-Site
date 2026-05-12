@@ -42,6 +42,7 @@ CLIENT INFORMATION:
 - Name: ${intake.fullName}
 - Email: ${intake.email}
 - Phone: ${intake.phone}
+- LinkedIn URL: ${intake.linkedinUrl || "Not provided"}
 - Student Status: ${intake.studentStatus}
 - School: ${intake.school || "Not provided"}
 - Graduation Year: ${intake.graduationYear || "Not provided"}
@@ -62,10 +63,13 @@ FORMATTING RULES:
 7. Each entry has an organization (bold) with location on the right, and a title (italic) with dates on the right
 8. For SKILLS AND INTERESTS, use entries where subtitle is the category label (e.g. "Technical", "Interests", "Volunteering") and bullets contain a single comma-separated string of items
 
-Return a JSON object with this exact structure (no markdown, just raw JSON):
+Return a JSON object with this exact structure (no markdown, just raw JSON).
+IMPORTANT: Do NOT include the email or LinkedIn URL in the contactLine. They are rendered separately as hyperlinks.
 {
   "fullName": "Client's full name",
-  "contactLine": "City, ST | phone | email",
+  "contactLine": "City, ST | phone",
+  "email": "client@email.com",
+  "linkedinUrl": "https://linkedin.com/in/clientname",
   "summary": "",
   "sections": [
     {
@@ -155,7 +159,7 @@ export async function generateResumeContent(
 
   try {
     const parsed = JSON.parse(cleaned) as ResumeContent;
-    return sanitizeContent(parsed);
+    return sanitizeContent(parsed, intake);
   } catch {
     throw new Error(
       `Failed to parse AI response as JSON. Raw response: ${raw.slice(0, 500)}`,
@@ -167,10 +171,12 @@ function stripMarkdown(s: string): string {
   return s.replace(/\*\*/g, "").replace(/\*/g, "").replace(/__/g, "").replace(/_/g, "");
 }
 
-function sanitizeContent(c: ResumeContent): ResumeContent {
+function sanitizeContent(c: ResumeContent, intake: IntakeData): ResumeContent {
   return {
     fullName: stripMarkdown(c.fullName ?? ""),
     contactLine: stripMarkdown(c.contactLine ?? ""),
+    email: intake.email || "",
+    linkedinUrl: intake.linkedinUrl || "",
     summary: stripMarkdown(c.summary ?? ""),
     sections: (c.sections ?? []).map((s) => ({
       heading: stripMarkdown(s.heading ?? ""),

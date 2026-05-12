@@ -2,7 +2,43 @@
 
 import type { ResumeContent } from "@/lib/types";
 
+function stripMarkdown(text: string): string {
+  return text.replace(/\*\*/g, "").replace(/\*/g, "").replace(/__/g, "").replace(/_/g, "");
+}
+
 export function ResumePaper({ content }: { content: ResumeContent }) {
+  const contactParts: React.ReactNode[] = [];
+
+  if (content.contactLine) {
+    contactParts.push(
+      <span key="base">{stripMarkdown(content.contactLine)}</span>
+    );
+  }
+
+  if (content.email) {
+    if (contactParts.length > 0) contactParts.push(<span key="sep-email"> | </span>);
+    contactParts.push(
+      <a key="email" href={`mailto:${content.email}`} className="r-link">
+        {content.email}
+      </a>
+    );
+  }
+
+  if (content.linkedinUrl) {
+    if (contactParts.length > 0) contactParts.push(<span key="sep-li"> | </span>);
+    contactParts.push(
+      <a
+        key="linkedin"
+        href={content.linkedinUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="r-link"
+      >
+        LinkedIn
+      </a>
+    );
+  }
+
   return (
     <div className="resume-paper mx-auto">
       <style jsx>{`
@@ -29,6 +65,10 @@ export function ResumePaper({ content }: { content: ResumeContent }) {
           font-size: 10pt;
           color: #555;
           margin: 0 0 6pt 0;
+        }
+        .r-link {
+          color: #4a9a9a;
+          text-decoration: underline;
         }
         .r-section-heading {
           font-size: 10.5pt;
@@ -78,30 +118,30 @@ export function ResumePaper({ content }: { content: ResumeContent }) {
         }
       `}</style>
 
-      <div className="r-name">{content.fullName}</div>
-      <div className="r-contact">{content.contactLine}</div>
+      <div className="r-name">{stripMarkdown(content.fullName)}</div>
+      <div className="r-contact">{contactParts}</div>
 
       {content.sections.map((section, si) => (
         <div key={si}>
-          <div className="r-section-heading">{section.heading}</div>
+          <div className="r-section-heading">{stripMarkdown(section.heading)}</div>
           {section.entries.map((entry, ei) => (
             <div key={ei}>
               {(entry.subtitle || entry.location) && (
                 <div className="r-org-line">
-                  <span className="r-org">{entry.subtitle || ""}</span>
-                  {entry.location && <span className="r-location">{entry.location}</span>}
+                  <span className="r-org">{stripMarkdown(entry.subtitle || "")}</span>
+                  {entry.location && <span className="r-location">{stripMarkdown(entry.location)}</span>}
                 </div>
               )}
               {(entry.title || entry.dateRange) && (
                 <div className="r-title-line">
-                  <span className="r-title">{entry.title || ""}</span>
-                  {entry.dateRange && <span className="r-dates">{entry.dateRange}</span>}
+                  <span className="r-title">{stripMarkdown(entry.title || "")}</span>
+                  {entry.dateRange && <span className="r-dates">{stripMarkdown(entry.dateRange)}</span>}
                 </div>
               )}
               {entry.bullets.length > 0 && (
                 <ul className="r-bullets">
                   {entry.bullets.map((b, bi) => (
-                    <li key={bi}>{b}</li>
+                    <li key={bi}>{stripMarkdown(b)}</li>
                   ))}
                 </ul>
               )}

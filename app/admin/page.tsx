@@ -108,7 +108,8 @@ export default function AdminPage() {
       setAuthenticated(true);
       setPassword("");
     } else {
-      setLoginError("Incorrect password.");
+      const data = await res.json().catch(() => null);
+      setLoginError(data?.error ?? "Incorrect password.");
     }
     setLoggingIn(false);
   }

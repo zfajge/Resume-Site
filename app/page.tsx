@@ -106,6 +106,7 @@ type IntakeData = {
   fullName: string;
   email: string;
   phone: string;
+  linkedinUrl: string;
   studentStatus: string;
   school: string;
   graduationYear: string;
@@ -123,6 +124,7 @@ const initialIntakeData: IntakeData = {
   fullName: "",
   email: "",
   phone: "",
+  linkedinUrl: "",
   studentStatus: "",
   school: "",
   graduationYear: "",
@@ -449,6 +451,12 @@ export default function Home() {
                       onChange={(value) => updateField("phone", value)}
                       placeholder="(555) 123-4567"
                     />
+                    <LabelledInput
+                      label="LinkedIn URL"
+                      value={intakeData.linkedinUrl}
+                      onChange={(value) => updateField("linkedinUrl", value)}
+                      placeholder="https://linkedin.com/in/yourname"
+                    />
                     <LabelledSelect
                       label="Are you a current student? *"
                       value={intakeData.studentStatus}
@@ -556,6 +564,7 @@ export default function Home() {
                       <ReviewItem label="Name" value={intakeData.fullName} />
                       <ReviewItem label="Email" value={intakeData.email} />
                       <ReviewItem label="Phone" value={intakeData.phone} />
+                      <ReviewItem label="LinkedIn" value={intakeData.linkedinUrl} />
                       <ReviewItem
                         label="Student Status"
                         value={intakeData.studentStatus}
