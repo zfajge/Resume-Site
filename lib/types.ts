@@ -2,6 +2,7 @@ export type IntakeData = {
   fullName: string;
   email: string;
   phone: string;
+  linkedinUrl: string;
   studentStatus: string;
   school: string;
   graduationYear: string;
@@ -45,6 +46,8 @@ export type GeneratedResume = {
 export type ResumeContent = {
   fullName: string;
   contactLine: string;
+  email: string;
+  linkedinUrl: string;
   summary: string;
   sections: ResumeContentSection[];
 };

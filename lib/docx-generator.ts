@@ -1,5 +1,6 @@
 import {
   Document,
+  ExternalHyperlink,
   Paragraph,
   TextRun,
   AlignmentType,
@@ -38,18 +39,41 @@ function nameParagraph(name: string): Paragraph {
   });
 }
 
-function contactParagraph(contactLine: string): Paragraph {
+function contactParagraph(contactLine: string, email?: string, linkedinUrl?: string): Paragraph {
+  const children: (TextRun | ExternalHyperlink)[] = [];
+
+  if (contactLine) {
+    children.push(new TextRun({ text: contactLine, font: FONT, size: CONTACT_SIZE, color: "555555" }));
+  }
+
+  if (email) {
+    if (children.length > 0) {
+      children.push(new TextRun({ text: " | ", font: FONT, size: CONTACT_SIZE, color: "555555" }));
+    }
+    children.push(
+      new ExternalHyperlink({
+        link: `mailto:${email}`,
+        children: [new TextRun({ text: email, font: FONT, size: CONTACT_SIZE, color: ACCENT, underline: {} })],
+      })
+    );
+  }
+
+  if (linkedinUrl) {
+    if (children.length > 0) {
+      children.push(new TextRun({ text: " | ", font: FONT, size: CONTACT_SIZE, color: "555555" }));
+    }
+    children.push(
+      new ExternalHyperlink({
+        link: linkedinUrl,
+        children: [new TextRun({ text: "LinkedIn", font: FONT, size: CONTACT_SIZE, color: ACCENT, underline: {} })],
+      })
+    );
+  }
+
   return new Paragraph({
     alignment: AlignmentType.CENTER,
     spacing: { after: 80 },
-    children: [
-      new TextRun({
-        text: contactLine,
-        font: FONT,
-        size: CONTACT_SIZE,
-        color: "555555",
-      }),
-    ],
+    children,
   });
 }
 
@@ -116,7 +140,7 @@ export async function generateDocx(content: ResumeContent): Promise<Buffer> {
   const children: Paragraph[] = [];
 
   children.push(nameParagraph(safe(content.fullName)));
-  children.push(contactParagraph(safe(content.contactLine)));
+  children.push(contactParagraph(safe(content.contactLine), content.email, content.linkedinUrl));
 
   for (const section of content.sections ?? []) {
     children.push(sectionHeading(safe(section.heading)));
