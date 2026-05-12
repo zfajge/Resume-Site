@@ -6,14 +6,16 @@ import {
   CheckCircle2,
   Download,
   Eye,
-  FileText,
   Loader2,
+  Pencil,
   Trash2,
   Upload,
   XCircle,
 } from "lucide-react";
 import Link from "next/link";
 import type { GeneratedResume, ResumeContent } from "@/lib/types";
+import { ResumePaper } from "./resume-paper";
+import { ResumeEditor } from "./resume-editor";
 
 type TrainingSummary = {
   id: string;
@@ -41,10 +43,13 @@ export default function AdminPage() {
   const [uploading, setUploading] = useState(false);
   const [loadingTraining, setLoadingTraining] = useState(true);
   const [loadingResumes, setLoadingResumes] = useState(true);
+
   const [selectedResume, setSelectedResume] = useState<GeneratedResume | null>(null);
   const [editingContent, setEditingContent] = useState<ResumeContent | null>(null);
+  const [mode, setMode] = useState<"preview" | "edit">("preview");
   const [saving, setSaving] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
+  const [showIntake, setShowIntake] = useState(false);
 
   const fetchTraining = useCallback(async () => {
     setLoadingTraining(true);
@@ -109,15 +114,17 @@ export default function AdminPage() {
       const data: GeneratedResume = await res.json();
       setSelectedResume(data);
       setEditingContent(structuredClone(data.content));
+      setMode("preview");
+      setShowIntake(false);
     }
   }
 
-  async function updateResumeStatus(id: string, status: string, adminNotes?: string) {
+  async function updateResumeStatus(id: string, status: string) {
     setSaving(true);
     await fetch(`/api/resumes/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status, adminNotes }),
+      body: JSON.stringify({ status }),
     });
     setSaving(false);
     setSelectedResume(null);
@@ -129,16 +136,19 @@ export default function AdminPage() {
   async function saveEditedResume(id: string) {
     if (!editingContent) return;
     setSaving(true);
-    await fetch(`/api/resumes/${id}`, {
+    const res = await fetch(`/api/resumes/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ content: editingContent }),
     });
+    if (res.ok) {
+      const updated: GeneratedResume = await res.json();
+      setSelectedResume(updated);
+      setMode("preview");
+      setStatusMessage("Resume saved & .docx regenerated.");
+    }
     setSaving(false);
-    setSelectedResume(null);
-    setEditingContent(null);
     await fetchResumes();
-    setStatusMessage("Resume updated and regenerated.");
   }
 
   const statusColor: Record<string, string> = {
@@ -148,175 +158,160 @@ export default function AdminPage() {
     edited: "text-cyan-300 bg-cyan-400/10 border-cyan-400/30",
   };
 
+  /* ─────────────────────── RESUME REVIEW VIEW ─────────────────────── */
   if (selectedResume && editingContent) {
     return (
       <div className="min-h-screen bg-slate-950 text-slate-100">
-        <div className="mx-auto max-w-5xl px-6 py-10">
-          <button
-            onClick={() => { setSelectedResume(null); setEditingContent(null); }}
-            className="mb-6 flex items-center gap-2 text-sm text-slate-400 hover:text-cyan-300"
-          >
-            <ArrowLeft className="h-4 w-4" /> Back to dashboard
-          </button>
+        {/* Top bar */}
+        <div className="sticky top-0 z-20 border-b border-slate-800 bg-slate-950/95 backdrop-blur">
+          <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-3">
+            <button
+              onClick={() => { setSelectedResume(null); setEditingContent(null); }}
+              className="flex items-center gap-2 text-sm text-slate-400 hover:text-cyan-300"
+            >
+              <ArrowLeft className="h-4 w-4" /> Dashboard
+            </button>
 
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold text-white">
+            <div className="flex items-center gap-2">
+              <span className="mr-2 text-sm text-slate-400">
                 {selectedResume.intakeData.fullName}
-              </h1>
-              <p className="text-sm text-slate-400">
-                {selectedResume.intakeData.email} &middot; {selectedResume.intakeData.selectedService}
-              </p>
+              </span>
+              <span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${statusColor[selectedResume.status] ?? ""}`}>
+                {selectedResume.status}
+              </span>
             </div>
-            <span className={`rounded-full border px-3 py-1 text-xs font-medium ${statusColor[selectedResume.status] ?? ""}`}>
-              {selectedResume.status}
-            </span>
-          </div>
 
-          <div className="mb-6 rounded-2xl border border-slate-700 bg-slate-900/80 p-6">
-            <h2 className="mb-4 text-lg font-semibold text-white">Client Intake Data</h2>
-            <div className="grid gap-2 text-sm md:grid-cols-2">
-              {Object.entries(selectedResume.intakeData).map(([key, val]) => (
-                <p key={key}>
-                  <span className="font-medium text-slate-300">{formatLabel(key)}:</span>{" "}
-                  <span className="text-slate-400">{val || "—"}</span>
-                </p>
-              ))}
-            </div>
-          </div>
-
-          <div className="mb-6 rounded-2xl border border-slate-700 bg-slate-900/80 p-6">
-            <h2 className="mb-4 text-lg font-semibold text-white">Generated Resume Content</h2>
-            <p className="mb-2 text-xs text-slate-500">Edit any field below. Changes will regenerate the docx.</p>
-
-            <label className="mb-3 block text-sm">
-              <span className="font-medium text-slate-300">Summary</span>
-              <textarea
-                value={editingContent.summary}
-                onChange={(e) => setEditingContent({ ...editingContent, summary: e.target.value })}
-                rows={3}
-                className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-950/70 px-3 py-2.5 text-sm text-slate-100 outline-none focus:border-cyan-300"
-              />
-            </label>
-
-            {editingContent.sections.map((section, si) => (
-              <div key={si} className="mb-4 rounded-xl border border-slate-800 p-4">
-                <input
-                  value={section.heading}
-                  onChange={(e) => {
-                    const next = structuredClone(editingContent);
-                    next.sections[si].heading = e.target.value;
-                    setEditingContent(next);
-                  }}
-                  className="mb-2 w-full border-b border-slate-700 bg-transparent text-sm font-semibold text-white outline-none focus:border-cyan-300"
-                />
-                {section.entries.map((entry, ei) => (
-                  <div key={ei} className="mb-3 ml-2 border-l-2 border-slate-800 pl-3">
-                    <div className="flex gap-2 text-sm">
-                      <input
-                        value={entry.title}
-                        onChange={(e) => {
-                          const next = structuredClone(editingContent);
-                          next.sections[si].entries[ei].title = e.target.value;
-                          setEditingContent(next);
-                        }}
-                        className="flex-1 bg-transparent font-medium text-slate-200 outline-none focus:text-cyan-200"
-                        placeholder="Title"
-                      />
-                      <input
-                        value={entry.dateRange}
-                        onChange={(e) => {
-                          const next = structuredClone(editingContent);
-                          next.sections[si].entries[ei].dateRange = e.target.value;
-                          setEditingContent(next);
-                        }}
-                        className="w-40 bg-transparent text-right text-slate-400 outline-none focus:text-cyan-200"
-                        placeholder="Date range"
-                      />
-                    </div>
-                    <input
-                      value={entry.subtitle}
-                      onChange={(e) => {
-                        const next = structuredClone(editingContent);
-                        next.sections[si].entries[ei].subtitle = e.target.value;
-                        setEditingContent(next);
-                      }}
-                      className="w-full bg-transparent text-sm italic text-slate-400 outline-none focus:text-cyan-200"
-                      placeholder="Subtitle"
-                    />
-                    {entry.bullets.map((bullet, bi) => (
-                      <div key={bi} className="mt-1 flex items-start gap-1 text-sm">
-                        <span className="mt-0.5 text-slate-600">•</span>
-                        <input
-                          value={bullet}
-                          onChange={(e) => {
-                            const next = structuredClone(editingContent);
-                            next.sections[si].entries[ei].bullets[bi] = e.target.value;
-                            setEditingContent(next);
-                          }}
-                          className="flex-1 bg-transparent text-slate-300 outline-none focus:text-cyan-200"
-                        />
-                      </div>
-                    ))}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const next = structuredClone(editingContent);
-                        next.sections[si].entries[ei].bullets.push("");
-                        setEditingContent(next);
-                      }}
-                      className="mt-1 text-xs text-cyan-400 hover:text-cyan-300"
-                    >
-                      + Add bullet
-                    </button>
-                  </div>
-                ))}
+            <div className="flex items-center gap-2">
+              {/* Preview / Edit toggle */}
+              <div className="flex rounded-lg border border-slate-700 text-xs font-medium">
+                <button
+                  onClick={() => setMode("preview")}
+                  className={`flex items-center gap-1.5 rounded-l-lg px-3 py-1.5 transition ${
+                    mode === "preview" ? "bg-cyan-400 text-slate-950" : "text-slate-300 hover:text-white"
+                  }`}
+                >
+                  <Eye className="h-3.5 w-3.5" /> Preview
+                </button>
+                <button
+                  onClick={() => setMode("edit")}
+                  className={`flex items-center gap-1.5 rounded-r-lg px-3 py-1.5 transition ${
+                    mode === "edit" ? "bg-cyan-400 text-slate-950" : "text-slate-300 hover:text-white"
+                  }`}
+                >
+                  <Pencil className="h-3.5 w-3.5" /> Edit
+                </button>
               </div>
-            ))}
+
+              <button
+                onClick={() => setShowIntake(!showIntake)}
+                className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+                  showIntake
+                    ? "border-cyan-400/40 bg-cyan-400/10 text-cyan-300"
+                    : "border-slate-700 text-slate-400 hover:text-white"
+                }`}
+              >
+                Client Info
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Status message */}
+        {statusMessage && (
+          <div className="mx-auto max-w-[1200px] px-6 pt-3">
+            <div className="rounded-xl border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-sm text-cyan-200">
+              {statusMessage}
+              <button onClick={() => setStatusMessage("")} className="ml-3 text-cyan-400 hover:text-white">✕</button>
+            </div>
+          </div>
+        )}
+
+        {/* Main content */}
+        <div className="mx-auto flex max-w-[1200px] gap-6 px-6 py-6">
+          {/* Paper area */}
+          <div className="flex-1 overflow-auto">
+            <div className="py-4" style={{ background: "repeating-conic-gradient(#1e293b 0% 25%, #0f172a 0% 50%) 0 0 / 20px 20px" }}>
+              <div className="mx-auto" style={{ width: "8.5in" }}>
+                {mode === "preview" ? (
+                  <ResumePaper content={editingContent} />
+                ) : (
+                  <ResumeEditor content={editingContent} onChange={setEditingContent} />
+                )}
+              </div>
+            </div>
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            <button
-              onClick={() => updateResumeStatus(selectedResume.id, "approved")}
-              disabled={saving}
-              className="inline-flex items-center gap-2 rounded-full bg-emerald-400 px-5 py-2.5 text-sm font-semibold text-slate-950 hover:bg-emerald-300 disabled:opacity-50"
-            >
-              <CheckCircle2 className="h-4 w-4" /> Approve
-            </button>
-            <button
-              onClick={() => saveEditedResume(selectedResume.id)}
-              disabled={saving}
-              className="inline-flex items-center gap-2 rounded-full bg-cyan-400 px-5 py-2.5 text-sm font-semibold text-slate-950 hover:bg-cyan-300 disabled:opacity-50"
-            >
-              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileText className="h-4 w-4" />}
-              Save Edits & Regenerate
-            </button>
-            <button
-              onClick={() => updateResumeStatus(selectedResume.id, "denied")}
-              disabled={saving}
-              className="inline-flex items-center gap-2 rounded-full bg-rose-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-rose-400 disabled:opacity-50"
-            >
-              <XCircle className="h-4 w-4" /> Deny
-            </button>
-            <a
-              href={`/api/resumes/${selectedResume.id}/download`}
-              className="inline-flex items-center gap-2 rounded-full border border-slate-600 px-5 py-2.5 text-sm font-semibold text-slate-200 hover:border-cyan-300 hover:text-cyan-200"
-            >
-              <Download className="h-4 w-4" /> Download .docx
-            </a>
+          {/* Side panel (Client intake info) */}
+          {showIntake && (
+            <div className="w-80 flex-shrink-0">
+              <div className="sticky top-16 rounded-2xl border border-slate-800 bg-slate-900/80 p-5">
+                <h3 className="mb-3 text-sm font-semibold text-white">Client Intake</h3>
+                <div className="space-y-2 text-xs">
+                  {Object.entries(selectedResume.intakeData).map(([key, val]) => (
+                    <p key={key}>
+                      <span className="font-medium text-slate-400">{formatLabel(key)}</span>
+                      <br />
+                      <span className="text-slate-300">{val || "—"}</span>
+                    </p>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Bottom action bar */}
+        <div className="sticky bottom-0 border-t border-slate-800 bg-slate-950/95 backdrop-blur">
+          <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-3">
+            <div className="flex gap-2">
+              <button
+                onClick={() => updateResumeStatus(selectedResume.id, "approved")}
+                disabled={saving}
+                className="inline-flex items-center gap-2 rounded-full bg-emerald-400 px-5 py-2 text-sm font-semibold text-slate-950 hover:bg-emerald-300 disabled:opacity-50"
+              >
+                <CheckCircle2 className="h-4 w-4" /> Approve
+              </button>
+              <button
+                onClick={() => updateResumeStatus(selectedResume.id, "denied")}
+                disabled={saving}
+                className="inline-flex items-center gap-2 rounded-full bg-rose-500 px-5 py-2 text-sm font-semibold text-white hover:bg-rose-400 disabled:opacity-50"
+              >
+                <XCircle className="h-4 w-4" /> Deny
+              </button>
+            </div>
+
+            <div className="flex gap-2">
+              {mode === "edit" && (
+                <button
+                  onClick={() => saveEditedResume(selectedResume.id)}
+                  disabled={saving}
+                  className="inline-flex items-center gap-2 rounded-full bg-cyan-400 px-5 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-300 disabled:opacity-50"
+                >
+                  {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Pencil className="h-4 w-4" />}
+                  Save &amp; Regenerate .docx
+                </button>
+              )}
+              <a
+                href={`/api/resumes/${selectedResume.id}/download`}
+                className="inline-flex items-center gap-2 rounded-full border border-slate-600 px-5 py-2 text-sm font-semibold text-slate-200 hover:border-cyan-300 hover:text-cyan-200"
+              >
+                <Download className="h-4 w-4" /> Download .docx
+              </a>
+            </div>
           </div>
         </div>
       </div>
     );
   }
 
+  /* ─────────────────────── DASHBOARD VIEW ─────────────────────── */
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
       <div className="mx-auto max-w-6xl px-6 py-10">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-semibold text-white">ZF Resumes Admin</h1>
-            <p className="text-sm text-slate-400">Manage training data & review AI-generated resumes</p>
+            <p className="text-sm text-slate-400">Manage training data &amp; review AI-generated resumes</p>
           </div>
           <Link href="/" className="text-sm text-slate-400 hover:text-cyan-300">
             &larr; Back to site
