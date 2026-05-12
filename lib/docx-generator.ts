@@ -2,7 +2,6 @@ import {
   Document,
   Paragraph,
   TextRun,
-  HeadingLevel,
   AlignmentType,
   BorderStyle,
   Packer,
@@ -11,22 +10,29 @@ import {
 } from "docx";
 import type { ResumeContent } from "./types";
 
-const FONT = "Calibri";
-const FONT_SIZE_NAME = 24;      // half-points → 12pt
-const FONT_SIZE_CONTACT = 18;   // 9pt
-const FONT_SIZE_HEADING = 22;   // 11pt
-const FONT_SIZE_BODY = 20;      // 10pt
+const FONT = "Times New Roman";
+const ACCENT = "4A9A9A";
+const NAME_SIZE = 28;       // 14pt
+const CONTACT_SIZE = 20;    // 10pt
+const HEADING_SIZE = 21;    // 10.5pt
+const BODY_SIZE = 20;       // 10pt
+
+function safe(val: unknown): string {
+  if (typeof val === "string") return val;
+  if (val == null) return "";
+  return String(val);
+}
 
 function nameParagraph(name: string): Paragraph {
   return new Paragraph({
     alignment: AlignmentType.CENTER,
-    spacing: { after: 40 },
+    spacing: { after: 20 },
     children: [
       new TextRun({
-        text: name.toUpperCase(),
+        text: name,
         bold: true,
         font: FONT,
-        size: FONT_SIZE_NAME,
+        size: NAME_SIZE,
       }),
     ],
   });
@@ -35,27 +41,13 @@ function nameParagraph(name: string): Paragraph {
 function contactParagraph(contactLine: string): Paragraph {
   return new Paragraph({
     alignment: AlignmentType.CENTER,
-    spacing: { after: 120 },
+    spacing: { after: 80 },
     children: [
       new TextRun({
         text: contactLine,
         font: FONT,
-        size: FONT_SIZE_CONTACT,
+        size: CONTACT_SIZE,
         color: "555555",
-      }),
-    ],
-  });
-}
-
-function summaryParagraph(summary: string): Paragraph {
-  return new Paragraph({
-    spacing: { after: 120 },
-    children: [
-      new TextRun({
-        text: summary,
-        font: FONT,
-        size: FONT_SIZE_BODY,
-        italics: true,
       }),
     ],
   });
@@ -63,52 +55,47 @@ function summaryParagraph(summary: string): Paragraph {
 
 function sectionHeading(heading: string): Paragraph {
   return new Paragraph({
-    heading: HeadingLevel.HEADING_2,
-    spacing: { before: 160, after: 60 },
+    spacing: { before: 120, after: 40 },
     border: {
-      bottom: { style: BorderStyle.SINGLE, size: 6, color: "333333" },
+      bottom: { style: BorderStyle.SINGLE, size: 8, color: ACCENT },
     },
     children: [
       new TextRun({
         text: heading.toUpperCase(),
         bold: true,
         font: FONT,
-        size: FONT_SIZE_HEADING,
+        size: HEADING_SIZE,
       }),
     ],
   });
 }
 
-function entryHeader(
-  title: string,
-  subtitle: string,
-  dateRange: string,
-): Paragraph {
+function orgLocationLine(org: string, location: string): Paragraph {
   return new Paragraph({
     tabStops: [{ type: TabStopType.RIGHT, position: TabStopPosition.MAX }],
-    spacing: { before: 60, after: 20 },
+    spacing: { before: 40, after: 0 },
     children: [
-      new TextRun({ text: title, bold: true, font: FONT, size: FONT_SIZE_BODY }),
-      ...(subtitle
+      new TextRun({ text: safe(org), bold: true, font: FONT, size: BODY_SIZE }),
+      ...(location
         ? [
-            new TextRun({ text: " — ", font: FONT, size: FONT_SIZE_BODY }),
-            new TextRun({
-              text: subtitle,
-              italics: true,
-              font: FONT,
-              size: FONT_SIZE_BODY,
-            }),
+            new TextRun({ text: "\t", font: FONT, size: BODY_SIZE }),
+            new TextRun({ text: safe(location), bold: true, font: FONT, size: BODY_SIZE }),
           ]
         : []),
+    ],
+  });
+}
+
+function titleDateLine(title: string, dateRange: string): Paragraph {
+  return new Paragraph({
+    tabStops: [{ type: TabStopType.RIGHT, position: TabStopPosition.MAX }],
+    spacing: { before: 0, after: 20 },
+    children: [
+      new TextRun({ text: safe(title), italics: true, font: FONT, size: BODY_SIZE }),
       ...(dateRange
         ? [
-            new TextRun({ text: "\t", font: FONT, size: FONT_SIZE_BODY }),
-            new TextRun({
-              text: dateRange,
-              font: FONT,
-              size: FONT_SIZE_BODY,
-              color: "666666",
-            }),
+            new TextRun({ text: "\t", font: FONT, size: BODY_SIZE }),
+            new TextRun({ text: safe(dateRange), font: FONT, size: BODY_SIZE }),
           ]
         : []),
     ],
@@ -118,17 +105,11 @@ function entryHeader(
 function bulletParagraph(text: string): Paragraph {
   return new Paragraph({
     bullet: { level: 0 },
-    spacing: { after: 20 },
+    spacing: { after: 10 },
     children: [
-      new TextRun({ text, font: FONT, size: FONT_SIZE_BODY }),
+      new TextRun({ text: safe(text), font: FONT, size: BODY_SIZE }),
     ],
   });
-}
-
-function safe(val: unknown): string {
-  if (typeof val === "string") return val;
-  if (val == null) return "";
-  return String(val);
 }
 
 export async function generateDocx(content: ResumeContent): Promise<Buffer> {
@@ -137,14 +118,20 @@ export async function generateDocx(content: ResumeContent): Promise<Buffer> {
   children.push(nameParagraph(safe(content.fullName)));
   children.push(contactParagraph(safe(content.contactLine)));
 
-  if (content.summary) {
-    children.push(summaryParagraph(safe(content.summary)));
-  }
-
   for (const section of content.sections ?? []) {
     children.push(sectionHeading(safe(section.heading)));
     for (const entry of section.entries ?? []) {
-      children.push(entryHeader(safe(entry.title), safe(entry.subtitle), safe(entry.dateRange)));
+      const org = safe(entry.subtitle);
+      const loc = safe(entry.location);
+      const title = safe(entry.title);
+      const dates = safe(entry.dateRange);
+
+      if (org) {
+        children.push(orgLocationLine(org, loc));
+      }
+      if (title) {
+        children.push(titleDateLine(title, dates));
+      }
       for (const bullet of entry.bullets ?? []) {
         children.push(bulletParagraph(safe(bullet)));
       }
@@ -157,10 +144,10 @@ export async function generateDocx(content: ResumeContent): Promise<Buffer> {
         properties: {
           page: {
             margin: {
-              top: 720,    // 0.5 inch
-              bottom: 720,
-              left: 720,
-              right: 720,
+              top: 540,    // 0.375 inch
+              bottom: 540,
+              left: 620,   // ~0.43 inch
+              right: 620,
             },
           },
         },

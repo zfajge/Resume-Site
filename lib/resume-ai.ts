@@ -52,35 +52,81 @@ CLIENT INFORMATION:
 - Target Industries: ${intake.targetIndustries || "Not provided"}
 - Additional Details: ${intake.additionalDetails || "None"}
 
-RULES:
-1. Keep it to ONE page of content (concise, impactful)
+FORMATTING RULES:
+1. Keep it to ONE page (concise, impactful)
 2. Use strong action verbs to begin each bullet point
 3. Include quantifiable metrics wherever possible
-4. Tailor the content toward the target roles and industries
-5. Use ATS-friendly formatting (clear section headings, no tables/graphics)
-6. Include a professional summary (2-3 lines max)
+4. Tailor content toward the target roles and industries
+5. Do NOT include a summary paragraph — go straight into sections
+6. Use these section headings: EDUCATION, PROFESSIONAL EXPERIENCE, LEADERSHIP EXPERIENCE, SKILLS AND INTERESTS
+7. Each entry has an organization (bold) with location on the right, and a title (italic) with dates on the right
+8. For SKILLS AND INTERESTS, use entries where subtitle is the category label (e.g. "Technical", "Interests", "Volunteering") and bullets contain a single comma-separated string of items
 
 Return a JSON object with this exact structure (no markdown, just raw JSON):
 {
   "fullName": "Client's full name",
-  "contactLine": "email | phone | location",
-  "summary": "2-3 sentence professional summary",
+  "contactLine": "City, ST | phone | email",
+  "summary": "",
   "sections": [
     {
-      "heading": "SECTION NAME",
+      "heading": "EDUCATION",
       "entries": [
         {
-          "title": "Role or Degree Title",
-          "subtitle": "Organization or School Name",
-          "dateRange": "Start - End",
-          "bullets": ["Achievement bullet 1", "Achievement bullet 2"]
+          "title": "Degree name",
+          "subtitle": "University Name",
+          "location": "City, ST",
+          "dateRange": "Graduated: Month Year",
+          "bullets": ["Major: X | Minor: Y | GPA: X.XX / 4.00", "Honors: ..."]
+        }
+      ]
+    },
+    {
+      "heading": "PROFESSIONAL EXPERIENCE",
+      "entries": [
+        {
+          "title": "Job Title",
+          "subtitle": "Company Name",
+          "location": "City, ST",
+          "dateRange": "Mon Year – Mon Year",
+          "bullets": ["Action verb + achievement with metric...", "..."]
+        }
+      ]
+    },
+    {
+      "heading": "LEADERSHIP EXPERIENCE",
+      "entries": [
+        {
+          "title": "Role",
+          "subtitle": "Organization",
+          "location": "City, ST",
+          "dateRange": "Mon Year – Mon Year",
+          "bullets": ["..."]
+        }
+      ]
+    },
+    {
+      "heading": "SKILLS AND INTERESTS",
+      "entries": [
+        {
+          "title": "",
+          "subtitle": "Technical",
+          "location": "",
+          "dateRange": "",
+          "bullets": ["Excel, Python, SQL, Tableau, PowerPoint, ..."]
+        },
+        {
+          "title": "",
+          "subtitle": "Interests",
+          "location": "",
+          "dateRange": "",
+          "bullets": ["..."]
         }
       ]
     }
   ]
 }
 
-Generate appropriate sections like EDUCATION, EXPERIENCE, SKILLS, LEADERSHIP, etc. based on the client's information. Infer reasonable details from the provided context to create a complete, professional resume.`;
+Generate a professional resume matching this exact structure. Infer reasonable details from the provided context.`;
 }
 
 export async function generateResumeContent(
@@ -117,18 +163,23 @@ export async function generateResumeContent(
   }
 }
 
+function stripMarkdown(s: string): string {
+  return s.replace(/\*\*/g, "").replace(/\*/g, "").replace(/__/g, "").replace(/_/g, "");
+}
+
 function sanitizeContent(c: ResumeContent): ResumeContent {
   return {
-    fullName: c.fullName ?? "",
-    contactLine: c.contactLine ?? "",
-    summary: c.summary ?? "",
+    fullName: stripMarkdown(c.fullName ?? ""),
+    contactLine: stripMarkdown(c.contactLine ?? ""),
+    summary: stripMarkdown(c.summary ?? ""),
     sections: (c.sections ?? []).map((s) => ({
-      heading: s.heading ?? "",
+      heading: stripMarkdown(s.heading ?? ""),
       entries: (s.entries ?? []).map((e) => ({
-        title: e.title ?? "",
-        subtitle: e.subtitle ?? "",
-        dateRange: e.dateRange ?? "",
-        bullets: (e.bullets ?? []).map((b) => b ?? ""),
+        title: stripMarkdown(e.title ?? ""),
+        subtitle: stripMarkdown(e.subtitle ?? ""),
+        location: stripMarkdown(e.location ?? ""),
+        dateRange: stripMarkdown(e.dateRange ?? ""),
+        bullets: (e.bullets ?? []).map((b) => stripMarkdown(b ?? "")),
       })),
     })),
   };

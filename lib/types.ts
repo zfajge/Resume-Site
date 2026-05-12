@@ -57,6 +57,7 @@ export type ResumeContentSection = {
 export type ResumeEntry = {
   title: string;
   subtitle: string;
+  location: string;
   dateRange: string;
   bullets: string[];
 };
