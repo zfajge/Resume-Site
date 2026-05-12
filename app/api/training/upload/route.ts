@@ -25,7 +25,14 @@ export async function POST(request: Request) {
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    const parsed = await parseDocx(buffer);
+
+    const parsed = await parseDocx(buffer).catch(() => null);
+    if (!parsed) {
+      return NextResponse.json(
+        { error: "Invalid .docx file contents" },
+        { status: 400 },
+      );
+    }
 
     const example = {
       id: uuidv4(),
@@ -49,6 +56,10 @@ export async function POST(request: Request) {
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Upload failed";
-    return NextResponse.json({ error: message }, { status: 500 });
+    const isBadRequest = message.includes("Content-Type was not one of");
+    return NextResponse.json(
+      { error: message },
+      { status: isBadRequest ? 400 : 500 },
+    );
   }
 }
