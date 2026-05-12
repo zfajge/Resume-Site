@@ -125,22 +125,28 @@ function bulletParagraph(text: string): Paragraph {
   });
 }
 
+function safe(val: unknown): string {
+  if (typeof val === "string") return val;
+  if (val == null) return "";
+  return String(val);
+}
+
 export async function generateDocx(content: ResumeContent): Promise<Buffer> {
   const children: Paragraph[] = [];
 
-  children.push(nameParagraph(content.fullName));
-  children.push(contactParagraph(content.contactLine));
+  children.push(nameParagraph(safe(content.fullName)));
+  children.push(contactParagraph(safe(content.contactLine)));
 
   if (content.summary) {
-    children.push(summaryParagraph(content.summary));
+    children.push(summaryParagraph(safe(content.summary)));
   }
 
-  for (const section of content.sections) {
-    children.push(sectionHeading(section.heading));
-    for (const entry of section.entries) {
-      children.push(entryHeader(entry.title, entry.subtitle, entry.dateRange));
-      for (const bullet of entry.bullets) {
-        children.push(bulletParagraph(bullet));
+  for (const section of content.sections ?? []) {
+    children.push(sectionHeading(safe(section.heading)));
+    for (const entry of section.entries ?? []) {
+      children.push(entryHeader(safe(entry.title), safe(entry.subtitle), safe(entry.dateRange)));
+      for (const bullet of entry.bullets ?? []) {
+        children.push(bulletParagraph(safe(bullet)));
       }
     }
   }

@@ -91,7 +91,7 @@ export async function generateResumeContent(
   const prompt = buildPrompt(intake, trainingContext);
 
   const completion = await getClient().chat.completions.create({
-    model: "gemini-2.0-flash",
+    model: "gemini-2.5-flash",
     messages: [
       {
         role: "system",
@@ -101,17 +101,35 @@ export async function generateResumeContent(
       { role: "user", content: prompt },
     ],
     temperature: 0.7,
-    max_tokens: 2000,
+    max_tokens: 8000,
   });
 
   const raw = completion.choices[0]?.message?.content ?? "";
   const cleaned = raw.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
 
   try {
-    return JSON.parse(cleaned) as ResumeContent;
+    const parsed = JSON.parse(cleaned) as ResumeContent;
+    return sanitizeContent(parsed);
   } catch {
     throw new Error(
       `Failed to parse AI response as JSON. Raw response: ${raw.slice(0, 500)}`,
     );
   }
+}
+
+function sanitizeContent(c: ResumeContent): ResumeContent {
+  return {
+    fullName: c.fullName ?? "",
+    contactLine: c.contactLine ?? "",
+    summary: c.summary ?? "",
+    sections: (c.sections ?? []).map((s) => ({
+      heading: s.heading ?? "",
+      entries: (s.entries ?? []).map((e) => ({
+        title: e.title ?? "",
+        subtitle: e.subtitle ?? "",
+        dateRange: e.dateRange ?? "",
+        bullets: (e.bullets ?? []).map((b) => b ?? ""),
+      })),
+    })),
+  };
 }
