@@ -5,12 +5,15 @@ import type {
   TrainingExample,
 } from "./types";
 
-let _openai: OpenAI | null = null;
+let _client: OpenAI | null = null;
 function getClient(): OpenAI {
-  if (!_openai) {
-    _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY ?? "" });
+  if (!_client) {
+    _client = new OpenAI({
+      apiKey: process.env.GEMINI_API_KEY ?? "",
+      baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
+    });
   }
-  return _openai;
+  return _client;
 }
 
 function buildTrainingContext(examples: TrainingExample[]): string {
@@ -88,7 +91,7 @@ export async function generateResumeContent(
   const prompt = buildPrompt(intake, trainingContext);
 
   const completion = await getClient().chat.completions.create({
-    model: "gpt-4o",
+    model: "gemini-2.0-flash",
     messages: [
       {
         role: "system",

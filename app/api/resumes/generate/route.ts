@@ -16,9 +16,9 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!process.env.OPENAI_API_KEY) {
+    if (!process.env.GEMINI_API_KEY) {
       return NextResponse.json(
-        { error: "OPENAI_API_KEY is not configured. Please set it in your environment." },
+        { error: "GEMINI_API_KEY is not configured. Get a free key at https://aistudio.google.com/apikey" },
         { status: 500 },
       );
     }
