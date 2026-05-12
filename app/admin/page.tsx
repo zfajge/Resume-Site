@@ -7,6 +7,8 @@ import {
   Download,
   Eye,
   Loader2,
+  Lock,
+  LogOut,
   Pencil,
   Trash2,
   Upload,
@@ -37,6 +39,11 @@ type ResumeSummary = {
 };
 
 export default function AdminPage() {
+  const [authenticated, setAuthenticated] = useState<boolean | null>(null);
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [loggingIn, setLoggingIn] = useState(false);
+
   const [tab, setTab] = useState<"training" | "resumes">("resumes");
   const [trainingExamples, setTrainingExamples] = useState<TrainingSummary[]>([]);
   const [resumes, setResumes] = useState<ResumeSummary[]>([]);
@@ -66,6 +73,13 @@ export default function AdminPage() {
   }, []);
 
   useEffect(() => {
+    fetch("/api/admin/auth")
+      .then((r) => setAuthenticated(r.ok))
+      .catch(() => setAuthenticated(false));
+  }, []);
+
+  useEffect(() => {
+    if (!authenticated) return;
     let cancelled = false;
     (async () => {
       const [trainingRes, resumesRes] = await Promise.all([
@@ -79,7 +93,80 @@ export default function AdminPage() {
       setLoadingResumes(false);
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [authenticated]);
+
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setLoggingIn(true);
+    setLoginError("");
+    const res = await fetch("/api/admin/auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password }),
+    });
+    if (res.ok) {
+      setAuthenticated(true);
+      setPassword("");
+    } else {
+      setLoginError("Incorrect password.");
+    }
+    setLoggingIn(false);
+  }
+
+  async function handleLogout() {
+    await fetch("/api/admin/auth", { method: "DELETE" });
+    setAuthenticated(false);
+  }
+
+  if (authenticated === null) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-950">
+        <Loader2 className="h-6 w-6 animate-spin text-cyan-400" />
+      </div>
+    );
+  }
+
+  if (!authenticated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4">
+        <div className="w-full max-w-sm">
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-8">
+            <div className="mb-6 flex flex-col items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-cyan-400/10">
+                <Lock className="h-6 w-6 text-cyan-400" />
+              </div>
+              <h1 className="text-xl font-semibold text-white">Admin Login</h1>
+              <p className="text-center text-sm text-slate-400">
+                Enter the admin password to access the dashboard.
+              </p>
+            </div>
+            <form onSubmit={handleLogin} className="space-y-4">
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                autoFocus
+                className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-cyan-300 focus:ring-2 focus:ring-cyan-400/20"
+              />
+              {loginError && (
+                <p className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-300">
+                  {loginError}
+                </p>
+              )}
+              <button
+                type="submit"
+                disabled={loggingIn || !password}
+                className="w-full rounded-xl bg-cyan-400 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:opacity-50"
+              >
+                {loggingIn ? "Signing in..." : "Sign In"}
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   async function uploadTrainingFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -313,9 +400,17 @@ export default function AdminPage() {
             <h1 className="text-3xl font-semibold text-white">ZF Resumes Admin</h1>
             <p className="text-sm text-slate-400">Manage training data &amp; review AI-generated resumes</p>
           </div>
-          <Link href="/" className="text-sm text-slate-400 hover:text-cyan-300">
-            &larr; Back to site
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link href="/" className="text-sm text-slate-400 hover:text-cyan-300">
+              &larr; Back to site
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-1.5 rounded-full border border-slate-700 px-3 py-1.5 text-xs font-medium text-slate-400 transition hover:border-rose-400/50 hover:text-rose-300"
+            >
+              <LogOut className="h-3 w-3" /> Sign Out
+            </button>
+          </div>
         </div>
 
         {statusMessage && (
