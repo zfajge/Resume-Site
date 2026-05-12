@@ -594,6 +594,7 @@ export default function Home() {
                   <div className="flex gap-3">
                     {currentStep < steps.length - 1 ? (
                       <button
+                        key="continue-step"
                         type="button"
                         onClick={goToNextStep}
                         className="inline-flex items-center gap-2 rounded-full bg-cyan-400 px-5 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300"
@@ -603,6 +604,7 @@ export default function Home() {
                       </button>
                     ) : (
                       <button
+                        key="submit-intake"
                         type="submit"
                         className="inline-flex items-center gap-2 rounded-full bg-emerald-400 px-5 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300"
                       >
