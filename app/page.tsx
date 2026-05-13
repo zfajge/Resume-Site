@@ -106,6 +106,7 @@ type IntakeData = {
   fullName: string;
   email: string;
   phone: string;
+  linkedinUrl: string;
   studentStatus: string;
   school: string;
   graduationYear: string;
@@ -123,6 +124,7 @@ const initialIntakeData: IntakeData = {
   fullName: "",
   email: "",
   phone: "",
+  linkedinUrl: "",
   studentStatus: "",
   school: "",
   graduationYear: "",
@@ -147,6 +149,7 @@ export default function Home() {
   const [currentStep, setCurrentStep] = useState(0);
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [intakeData, setIntakeData] = useState<IntakeData>(initialIntakeData);
 
   const companies = useMemo(
@@ -196,15 +199,33 @@ export default function Home() {
     setCurrentStep((step) => Math.max(step - 1, 0));
   };
 
-  const submitIntake = (event: React.FormEvent<HTMLFormElement>) => {
+  const submitIntake = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!stepValidationRules[currentStep]()) {
       setErrorMessage("Please complete the required fields before submitting.");
       return;
     }
 
-    setIsSubmitted(true);
+    setIsSubmitting(true);
     setErrorMessage("");
+
+    try {
+      const res = await fetch("/api/resumes/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(intakeData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setErrorMessage(data.error || "Something went wrong. Please try again.");
+        setIsSubmitting(false);
+        return;
+      }
+      setIsSubmitted(true);
+    } catch {
+      setErrorMessage("Network error. Please try again.");
+    }
+    setIsSubmitting(false);
   };
 
   return (
@@ -430,6 +451,12 @@ export default function Home() {
                       onChange={(value) => updateField("phone", value)}
                       placeholder="(555) 123-4567"
                     />
+                    <LabelledInput
+                      label="LinkedIn URL"
+                      value={intakeData.linkedinUrl}
+                      onChange={(value) => updateField("linkedinUrl", value)}
+                      placeholder="https://linkedin.com/in/yourname"
+                    />
                     <LabelledSelect
                       label="Are you a current student? *"
                       value={intakeData.studentStatus}
@@ -537,6 +564,7 @@ export default function Home() {
                       <ReviewItem label="Name" value={intakeData.fullName} />
                       <ReviewItem label="Email" value={intakeData.email} />
                       <ReviewItem label="Phone" value={intakeData.phone} />
+                      <ReviewItem label="LinkedIn" value={intakeData.linkedinUrl} />
                       <ReviewItem
                         label="Student Status"
                         value={intakeData.studentStatus}
@@ -604,9 +632,10 @@ export default function Home() {
                     ) : (
                       <button
                         type="submit"
-                        className="inline-flex items-center gap-2 rounded-full bg-emerald-400 px-5 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300"
+                        disabled={isSubmitting}
+                        className="inline-flex items-center gap-2 rounded-full bg-emerald-400 px-5 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300 disabled:opacity-60"
                       >
-                        Submit Intake
+                        {isSubmitting ? "Generating Resume..." : "Submit Intake"}
                         <CheckCircle2 className="h-4 w-4" />
                       </button>
                     )}
@@ -617,10 +646,11 @@ export default function Home() {
               <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-8 text-center">
                 <CheckCircle2 className="mx-auto mb-4 h-10 w-10 text-emerald-300" />
                 <h3 className="mb-2 text-2xl font-semibold text-white">
-                  Intake Submitted
+                  Intake Submitted &amp; Resume Generated
                 </h3>
                 <p className="mx-auto max-w-xl text-slate-200">
-                  Thanks for sharing your details. ZF Resumes will follow up
+                  Thanks for sharing your details. Our AI has generated a
+                  tailored resume for you. Zachary will review it and follow up
                   with next steps, timeline confirmation, and payment details
                   within 24 hours.
                 </p>
