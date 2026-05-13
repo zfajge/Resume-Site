@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.105.4",
     "docx": "^9.6.1",
     "lucide-react": "^1.8.0",
     "mammoth": "^1.12.0",
