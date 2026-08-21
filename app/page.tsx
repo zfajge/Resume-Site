@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
   BriefcaseBusiness,
@@ -20,6 +20,7 @@ const navItems = [
   { label: "How It Works", href: "#how-it-works" },
   { label: "For Student Orgs", href: "#student-orgs" },
   { label: "About", href: "#about" },
+  { label: "Contact", href: "#contact" },
 ];
 
 const companyTickerNames = [
@@ -52,17 +53,28 @@ const processSteps = [
   },
 ];
 
-const servicePricing = [
+type ServiceTier = {
+  title: string;
+  standardPrice: string;
+  studentPrice: string;
+  summary: string;
+  features: string[];
+  popular: boolean;
+};
+
+const servicePricing: ServiceTier[] = [
   {
     title: "Free Intro Call",
-    price: "$0",
+    standardPrice: "$0",
+    studentPrice: "$0",
     summary: "15-min, no pressure. See if we're a fit.",
     features: ["Career goals review", "Quick resume diagnosis", "Suggested next step"],
     popular: false,
   },
   {
     title: "Resume Refresh",
-    price: "$95",
+    standardPrice: "$190",
+    studentPrice: "$95",
     summary: "Full rewrite + ATS check + 1 revision round",
     features: [
       "Bullet-by-bullet rewrite",
@@ -73,7 +85,8 @@ const servicePricing = [
   },
   {
     title: "LinkedIn Optimization",
-    price: "$85",
+    standardPrice: "$170",
+    studentPrice: "$85",
     summary: "Headline, About, experience, keywords",
     features: [
       "Headline + About rewrite",
@@ -84,7 +97,8 @@ const servicePricing = [
   },
   {
     title: "Resume + LinkedIn Bundle",
-    price: "$175",
+    standardPrice: "$350",
+    studentPrice: "$175",
     summary: "Most popular package for internship and full-time recruiting.",
     features: [
       "Complete resume rewrite",
@@ -95,7 +109,8 @@ const servicePricing = [
   },
   {
     title: "Career Mentorship (Single Session)",
-    price: "$65",
+    standardPrice: "$130",
+    studentPrice: "$65",
     summary: "45-min 1:1 call",
     features: [
       "Interview prep strategy",
@@ -106,7 +121,8 @@ const servicePricing = [
   },
   {
     title: "Career Mentorship (Monthly)",
-    price: "$180/mo",
+    standardPrice: "$360/mo",
+    studentPrice: "$180/mo",
     summary: "2 sessions/month + async Q&A",
     features: [
       "Twice-monthly accountability calls",
@@ -117,7 +133,8 @@ const servicePricing = [
   },
   {
     title: "Student Org Workshop",
-    price: "Starting at $350",
+    standardPrice: "Starting at $700",
+    studentPrice: "Starting at $350",
     summary:
       "Group session for your chapter/club, plus free 1:1 follow-ups for attendees",
     features: [
@@ -181,9 +198,58 @@ const faqs = [
   },
 ];
 
+const BUSINESS_EMAIL = "your-business-email@example.com";
+const defaultContactInterest = servicePricing[1]?.title ?? "Resume Refresh";
+
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  const [contactForm, setContactForm] = useState({
+    name: "",
+    email: "",
+    interest: defaultContactInterest,
+    message: "",
+  });
+  const [requestStudentDiscount, setRequestStudentDiscount] = useState(true);
+  const [contactError, setContactError] = useState("");
+
+  const updateContactField = (
+    field: "name" | "email" | "interest" | "message",
+    value: string
+  ) => {
+    setContactForm((current) => ({ ...current, [field]: value }));
+    if (contactError) {
+      setContactError("");
+    }
+  };
+
+  const openPrefilledEmail = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!contactForm.name.trim() || !contactForm.email.trim() || !contactForm.interest) {
+      setContactError("Please complete your name, email, and what you're looking for.");
+      return;
+    }
+
+    const isEduEmail = contactForm.email.toLowerCase().endsWith(".edu");
+    if (requestStudentDiscount && !isEduEmail) {
+      setContactError(
+        "Student discount verification requires a valid .edu email address."
+      );
+      return;
+    }
+
+    const subject = encodeURIComponent(`Career Services Inquiry: ${contactForm.interest}`);
+    const body = encodeURIComponent(
+      `Hi,\n\nI'm interested in ${contactForm.interest}.\n\nName: ${contactForm.name}\nEmail: ${contactForm.email}\nStudent discount requested: ${
+        requestStudentDiscount ? "Yes" : "No"
+      }\n\nAdditional details:\n${
+        contactForm.message.trim() || "[Add any goals, deadlines, or context here.]"
+      }\n`
+    );
+
+    window.location.href = `mailto:${BUSINESS_EMAIL}?subject=${subject}&body=${body}`;
+  };
 
   useEffect(() => {
     const elements = Array.from(
@@ -229,7 +295,7 @@ export default function Home() {
 
           <div className="hidden items-center md:flex">
             <a
-              href="#booking"
+              href="#contact"
               className="rounded-full bg-amber-400 px-5 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-amber-300"
             >
               Book Free Call
@@ -260,7 +326,7 @@ export default function Home() {
                 </a>
               ))}
               <a
-                href="#booking"
+                href="#contact"
                 className="mt-2 inline-flex w-fit items-center justify-center rounded-full bg-amber-400 px-4 py-2.5 text-sm font-semibold text-slate-950"
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -289,7 +355,7 @@ export default function Home() {
               </p>
               <div className="flex flex-wrap gap-3">
                 <a
-                  href="#booking"
+                  href="#contact"
                   className="inline-flex items-center gap-2 rounded-full bg-[#12233f] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0d1a2f]"
                 >
                   Book a Free 15-Min Call
@@ -352,6 +418,11 @@ export default function Home() {
               <h2 className="mt-3 text-3xl font-semibold text-[#12233f] sm:text-4xl">
                 Pick the support level that fits your goals.
               </h2>
+              <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                Verified students get <span className="font-semibold">50% off</span>.
+                To receive discounted pricing, contact through your{" "}
+                <span className="font-semibold">.edu email</span> for verification.
+              </p>
             </div>
 
             <div className="mt-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
@@ -373,7 +444,18 @@ export default function Home() {
                       </span>
                     )}
                   </div>
-                  <p className="text-3xl font-semibold text-slate-900">{tier.price}</p>
+                  <p className="text-3xl font-semibold text-slate-900">
+                    {tier.studentPrice}
+                  </p>
+                  <p className="mt-1 text-sm text-slate-600">
+                    Student verified rate (50% off)
+                  </p>
+                  {tier.standardPrice !== tier.studentPrice && (
+                    <p className="mt-1 text-sm text-slate-500">
+                      Standard:{" "}
+                      <span className="line-through">{tier.standardPrice}</span>
+                    </p>
+                  )}
                   <p className="mt-2 text-sm leading-relaxed text-slate-600">
                     {tier.summary}
                   </p>
@@ -386,7 +468,7 @@ export default function Home() {
                     ))}
                   </ul>
                   <a
-                    href="#booking"
+                    href="#contact"
                     className={`mt-6 inline-flex w-fit items-center justify-center rounded-full px-4 py-2.5 text-sm font-semibold transition ${
                       tier.popular
                         ? "bg-[#12233f] text-white hover:bg-[#0d1a2f]"
@@ -424,7 +506,7 @@ export default function Home() {
               workshop free.
             </p>
             <a
-              href="#booking"
+              href="#contact"
               className="mt-7 inline-flex items-center gap-2 rounded-full bg-amber-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-300"
             >
               Book a Workshop
@@ -573,26 +655,105 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="booking" className="mx-auto max-w-6xl px-6 py-20 sm:py-24">
+        <section id="contact" className="mx-auto max-w-6xl px-6 py-20 sm:py-24">
           <div
             data-reveal
             className="scroll-reveal rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/70 sm:p-8"
           >
             <h2 className="text-2xl font-semibold text-[#12233f] sm:text-3xl">
-              Book your call or workshop
+              Contact to start services
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-700">
-              Use this booking section for both individual student sessions and
-              student-organization workshop requests.
+              Share what you need, and we&apos;ll open a prefilled email draft so
+              you can send your request directly. Replace{" "}
+              <span className="font-semibold">{BUSINESS_EMAIL}</span> with your
+              business email when ready.
             </p>
-            <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
-              {/* TODO: Replace this src with your real Calendly embed URL. */}
-              <iframe
-                src="about:blank"
-                title="Calendly booking embed placeholder"
-                className="h-[580px] w-full"
-              />
-            </div>
+            <form
+              className="mt-6 grid gap-4 rounded-2xl border border-slate-200 bg-stone-50 p-5 sm:grid-cols-2"
+              onSubmit={openPrefilledEmail}
+            >
+              <label className="space-y-1 text-sm">
+                <span className="font-medium text-slate-700">Name</span>
+                <input
+                  type="text"
+                  value={contactForm.name}
+                  onChange={(event) => updateContactField("name", event.target.value)}
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-slate-900 outline-none transition focus:border-[#12233f]/60"
+                  placeholder="Your name"
+                />
+              </label>
+              <label className="space-y-1 text-sm">
+                <span className="font-medium text-slate-700">
+                  Email (use .edu for student discount)
+                </span>
+                <input
+                  type="email"
+                  value={contactForm.email}
+                  onChange={(event) => updateContactField("email", event.target.value)}
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-slate-900 outline-none transition focus:border-[#12233f]/60"
+                  placeholder="name@school.edu"
+                />
+              </label>
+              <label className="space-y-1 text-sm sm:col-span-2">
+                <span className="font-medium text-slate-700">
+                  What are you looking for?
+                </span>
+                <select
+                  value={contactForm.interest}
+                  onChange={(event) =>
+                    updateContactField("interest", event.target.value)
+                  }
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-slate-900 outline-none transition focus:border-[#12233f]/60"
+                >
+                  {servicePricing.map((tier) => (
+                    <option key={tier.title} value={tier.title}>
+                      {tier.title}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="space-y-1 text-sm sm:col-span-2">
+                <span className="font-medium text-slate-700">Details (optional)</span>
+                <textarea
+                  rows={4}
+                  value={contactForm.message}
+                  onChange={(event) => updateContactField("message", event.target.value)}
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-slate-900 outline-none transition focus:border-[#12233f]/60"
+                  placeholder="Share your timeline, goals, and any context before sending."
+                />
+              </label>
+              <label className="flex items-start gap-2 text-sm text-slate-700 sm:col-span-2">
+                <input
+                  type="checkbox"
+                  checked={requestStudentDiscount}
+                  onChange={(event) => {
+                    setRequestStudentDiscount(event.target.checked);
+                    if (contactError) {
+                      setContactError("");
+                    }
+                  }}
+                  className="mt-1 h-4 w-4 rounded border-slate-300 text-[#12233f]"
+                />
+                <span>
+                  I&apos;m requesting the 50% student discount and understand I must
+                  use a valid <span className="font-semibold">.edu email</span> for
+                  verification.
+                </span>
+              </label>
+              {contactError && (
+                <p className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700 sm:col-span-2">
+                  {contactError}
+                </p>
+              )}
+              <button
+                type="submit"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#12233f] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0d1a2f] sm:col-span-2 sm:w-fit"
+              >
+                Open Prefilled Email
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </form>
           </div>
         </section>
 
@@ -607,10 +768,10 @@ export default function Home() {
               </h2>
             </div>
             <a
-              href="#booking"
+              href="#contact"
               className="inline-flex items-center gap-2 rounded-full bg-[#12233f] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0d1a2f]"
             >
-              Book Your Free Call
+              Contact for Services
               <ArrowRight className="h-4 w-4" />
             </a>
           </div>
@@ -644,10 +805,10 @@ export default function Home() {
           <div className="space-y-2 text-sm">
             <p className="font-semibold text-white">Contact</p>
             <a
-              href="mailto:hello@launchledgercareers.com"
+              href={`mailto:${BUSINESS_EMAIL}`}
               className="block text-slate-300 transition hover:text-white"
             >
-              hello@launchledgercareers.com
+              {BUSINESS_EMAIL}
             </a>
             <a href="#" className="block text-slate-300 transition hover:text-white">
               Instagram
@@ -674,7 +835,7 @@ export default function Home() {
         }
 
         .marquee-track {
-          animation: ticker-scroll 28s linear infinite;
+          animation: ticker-scroll 50s linear infinite;
         }
 
         .marquee-wrapper:hover .marquee-track {
