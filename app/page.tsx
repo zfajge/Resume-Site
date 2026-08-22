@@ -230,7 +230,7 @@ const defaultContactInterest = servicePricing[1]?.title ?? "Resume Refresh";
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
-  const [founderImageMissing, setFounderImageMissing] = useState(false);
+  const [founderImageMissing, setFounderImageMissing] = useState(true);
   const [contactForm, setContactForm] = useState({
     name: "",
     email: "",
@@ -279,6 +279,11 @@ export default function Home() {
   };
 
   useEffect(() => {
+    const founderImage = new window.Image();
+    founderImage.src = "/zach-headshot.jpg";
+    founderImage.onload = () => setFounderImageMissing(false);
+    founderImage.onerror = () => setFounderImageMissing(true);
+
     const elements = Array.from(
       document.querySelectorAll<HTMLElement>("[data-reveal]")
     );
@@ -295,7 +300,11 @@ export default function Home() {
     );
 
     elements.forEach((element) => observer.observe(element));
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      founderImage.onload = null;
+      founderImage.onerror = null;
+    };
   }, []);
 
   const year = new Date().getFullYear();
