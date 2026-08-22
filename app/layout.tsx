@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ZF Resumes | Resume, LinkedIn & Career Services",
+  title: "Zach's Career Studio | Resume, LinkedIn & Mentorship",
   description:
-    "Land interviews at elite firms with personalized resume writing, LinkedIn optimization, and career coaching for Philadelphia students and graduates.",
+    "Modern career services for college students and student organizations, including resume rewrites, LinkedIn optimization, and mentorship workshops.",
 };
 
 export default function RootLayout({

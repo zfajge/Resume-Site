@@ -398,7 +398,9 @@ export default function AdminPage() {
       <div className="mx-auto max-w-6xl px-6 py-10">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-semibold text-white">ZF Resumes Admin</h1>
+            <h1 className="text-3xl font-semibold text-white">
+              Zach&apos;s Career Studio Admin
+            </h1>
             <p className="text-sm text-slate-400">Manage training data &amp; review AI-generated resumes</p>
           </div>
           <div className="flex items-center gap-4">

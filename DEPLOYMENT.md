@@ -1,6 +1,6 @@
 # Free Cloud Deployment Guide
 
-Host ZF Resumes for **$0/month** using Vercel + Supabase + Gemini.
+Host Zach's Career Studio for **$0/month** using Vercel + Supabase + Gemini.
 
 | Service | What it does | Free tier |
 |---------|-------------|-----------|
