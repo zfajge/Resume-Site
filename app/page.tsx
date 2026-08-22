@@ -170,6 +170,31 @@ const testimonials = [
   },
 ];
 
+const founderImpactPoints = [
+  "Final-round interviews at McKinsey & Company and LEK Consulting, plus an offer from Lockheed Martin.",
+  "Current Sales Finance Analyst at The Campbell's Company, overseeing $211M projected FY27 gross sales and driving $4.2M in projected savings through trade-event remediation.",
+  "Built an automation workflow in Excel and VBA to improve reporting accuracy, cut manual work, and support faster decision-making.",
+  "Temple University Fox Honors graduate (BBA Finance, MIS minor, 3.85 GPA) with leadership across consulting, finance, and campus organizations.",
+];
+
+const founderProofCards = [
+  {
+    title: "Real recruiting outcomes",
+    description:
+      "I coach from firsthand experience navigating competitive recruiting pipelines and converting interviews into offers.",
+  },
+  {
+    title: "Operator + analyst mindset",
+    description:
+      "From financial modeling to executive-ready storytelling, I help students communicate impact with clarity and confidence.",
+  },
+  {
+    title: "Leadership under pressure",
+    description:
+      "As chapter president and project lead, I learned how to guide teams, solve problems fast, and execute with accountability.",
+  },
+];
+
 const faqs = [
   {
     question: "How fast is turnaround?",
@@ -204,6 +229,7 @@ const defaultContactInterest = servicePricing[1]?.title ?? "Resume Refresh";
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  const [founderImageMissing, setFounderImageMissing] = useState(false);
   const [contactForm, setContactForm] = useState({
     name: "",
     email: "",
@@ -578,30 +604,70 @@ export default function Home() {
         </section>
 
         <section id="about" className="mx-auto max-w-6xl px-6 py-20 sm:py-24">
-          <div className="grid items-center gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+          <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
             <div data-reveal className="scroll-reveal">
               <p className="text-sm font-semibold uppercase tracking-[0.15em] text-slate-500">
                 About the Founder
               </p>
               <h2 className="mt-3 text-3xl font-semibold text-[#12233f] sm:text-4xl">
-                Built by someone who just navigated this process.
+                Meet Zach: experience-backed coaching for ambitious students.
               </h2>
               <p className="mt-5 leading-relaxed text-slate-700">
-                Placeholder bio: share your recent grad background, recruiting
-                experience, and why you started helping other students build
-                stronger career materials.
+                I&apos;m a Temple University Fox Honors graduate (BBA Finance,
+                MIS minor, 3.85 GPA) who recently went through the same
+                recruiting process most students are facing right now. I built
+                this studio to give students clear, practical guidance rooted in
+                what actually works.
               </p>
               <p className="mt-4 leading-relaxed text-slate-700">
-                Placeholder bio: include a short personal story that shows your
-                approach is practical, approachable, and peer-to-peer.
+                Along the way, I landed final-round interviews at McKinsey &
+                Company and LEK Consulting, plus an offer from Lockheed Martin,
+                and I now work in Sales Finance at The Campbell&apos;s Company.
+                My goal is to help students present themselves with the same
+                clarity and confidence in resumes, LinkedIn, and interviews.
               </p>
+              <ul className="mt-6 space-y-3 text-sm text-slate-700">
+                {founderImpactPoints.map((point) => (
+                  <li key={point} className="flex gap-2">
+                    <CircleCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#12233f]" />
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
             <div
               data-reveal
-              className="scroll-reveal overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-200/70"
+              className="scroll-reveal space-y-4"
             >
-              <div className="flex aspect-[4/5] items-center justify-center rounded-xl bg-gradient-to-br from-slate-200 to-slate-100 text-center text-sm font-medium text-slate-600">
-                Founder Photo Placeholder
+              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-200/70">
+                {!founderImageMissing ? (
+                  <img
+                    src="/zach-headshot.jpg"
+                    alt="Zach in suit and tie"
+                    className="aspect-[4/5] w-full rounded-xl object-cover"
+                    onError={() => setFounderImageMissing(true)}
+                  />
+                ) : (
+                  <div className="flex aspect-[4/5] items-center justify-center rounded-xl bg-gradient-to-br from-slate-200 to-slate-100 p-4 text-center text-sm font-medium text-slate-600">
+                    Add your headshot at /public/zach-headshot.jpg to display
+                    your founder photo.
+                  </div>
+                )}
+              </div>
+              <div className="grid gap-3">
+                {founderProofCards.map((card) => (
+                  <article
+                    key={card.title}
+                    className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-200/60"
+                  >
+                    <h3 className="text-sm font-semibold text-[#12233f]">
+                      {card.title}
+                    </h3>
+                    <p className="mt-1 text-sm leading-relaxed text-slate-700">
+                      {card.description}
+                    </p>
+                  </article>
+                ))}
               </div>
             </div>
           </div>
@@ -665,9 +731,8 @@ export default function Home() {
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-700">
               Share what you need, and we&apos;ll open a prefilled email draft so
-              you can send your request directly. Replace{" "}
-              <span className="font-semibold">{BUSINESS_EMAIL}</span> with your
-              business email when ready.
+              you can send your request directly to{" "}
+              <span className="font-semibold">{BUSINESS_EMAIL}</span>.
             </p>
             <form
               className="mt-6 grid gap-4 rounded-2xl border border-slate-200 bg-stone-50 p-5 sm:grid-cols-2"
