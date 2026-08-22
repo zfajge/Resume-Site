@@ -39,18 +39,21 @@ const processSteps = [
     description:
       "Pick a quick 15-minute slot so we can learn your goals and timelines.",
     icon: CalendarCheck2,
+    visualClass: "from-[#3b82f6] via-[#1e40af] to-[#60a5fa]",
   },
   {
     title: "Get a tailored plan",
     description:
       "Receive specific support for your resume, LinkedIn, and mentorship needs.",
     icon: Compass,
+    visualClass: "from-[#1d4ed8] via-[#1e3a8a] to-[#38bdf8]",
   },
   {
     title: "Apply with confidence",
     description:
       "Use polished materials and clear strategy to submit stronger applications.",
     icon: CircleCheck,
+    visualClass: "from-[#312e81] via-[#1d4ed8] to-[#2563eb]",
   },
 ];
 
@@ -310,10 +313,10 @@ export default function Home() {
   const year = new Date().getFullYear();
 
   return (
-    <div className="tech-theme min-h-screen bg-[#060b16] text-slate-100">
+    <div className="tech-theme min-h-screen bg-[#071a30] text-slate-100">
       <header className="sticky top-0 z-40 border-b border-slate-700/70 bg-[#091227]/80 backdrop-blur-xl">
         <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-6">
-          <a href="#" className="text-lg font-semibold tracking-tight text-[#12233f]">
+          <a href="#" className="text-lg font-semibold tracking-tight text-white md:text-xl">
             Zach&apos;s Career Studio
           </a>
 
@@ -322,7 +325,7 @@ export default function Home() {
               <a
                 key={item.href}
                 href={item.href}
-                className="text-sm font-medium text-slate-700 transition hover:text-[#12233f]"
+                className="text-sm font-medium text-slate-200/90 transition hover:text-white"
               >
                 {item.label}
               </a>
@@ -332,7 +335,7 @@ export default function Home() {
           <div className="hidden items-center md:flex">
             <a
               href="#contact"
-              className="rounded-full bg-amber-400 px-5 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-amber-300"
+              className="rounded-full bg-[#2d5bff] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#224ee8]"
             >
               Book Free Call
             </a>
@@ -349,13 +352,13 @@ export default function Home() {
           </button>
         </div>
         {mobileMenuOpen && (
-          <div className="border-t border-slate-200 bg-stone-50 px-6 py-4 md:hidden">
+          <div className="border-t border-slate-700 bg-[#0a1830] px-6 py-4 md:hidden">
             <div className="flex flex-col gap-3">
               {navItems.map((item) => (
                 <a
                   key={item.href}
                   href={item.href}
-                  className="rounded-xl px-2 py-1.5 text-sm font-medium text-slate-700"
+                  className="rounded-xl px-2 py-1.5 text-sm font-medium text-slate-200"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {item.label}
@@ -363,7 +366,7 @@ export default function Home() {
               ))}
               <a
                 href="#contact"
-                className="mt-2 inline-flex w-fit items-center justify-center rounded-full bg-amber-400 px-4 py-2.5 text-sm font-semibold text-slate-950"
+                className="mt-2 inline-flex w-fit items-center justify-center rounded-full bg-[#2d5bff] px-4 py-2.5 text-sm font-semibold text-white"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Book Free Call
@@ -374,32 +377,33 @@ export default function Home() {
       </header>
 
       <main>
-        <section className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.28)_0%,_rgba(15,23,42,0.45)_44%,_rgba(2,6,23,0.98)_100%)]" />
+        <section className="relative overflow-hidden bg-[#071a30]">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,_rgba(59,130,246,0.32)_0%,_rgba(15,23,42,0)_42%),radial-gradient(circle_at_90%_8%,_rgba(37,99,235,0.2)_0%,_rgba(15,23,42,0)_38%)]" />
           <div className="relative mx-auto max-w-6xl px-6 pb-14 pt-16 sm:pb-20 sm:pt-24">
             <div data-reveal className="scroll-reveal max-w-3xl space-y-7">
-              <p className="inline-flex items-center gap-2 rounded-full border border-[#12233f]/15 bg-white/80 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-[#12233f]">
-                <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+              <p className="inline-flex items-center gap-2 rounded-full border border-slate-500/40 bg-slate-900/45 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-slate-100">
+                <Sparkles className="h-3.5 w-3.5 text-[#7ea5ff]" />
                 Career support built by a recent grad
               </p>
-              <h1 className="text-balance text-4xl font-semibold leading-tight text-[#12233f] sm:text-5xl lg:text-6xl">
-                Land the interview. We&apos;ll help you look the part.
+              <h1 className="text-balance text-4xl font-semibold leading-tight text-white sm:text-5xl lg:text-6xl">
+                What&apos;s your next brilliant interview move?
               </h1>
-              <p className="max-w-2xl text-lg leading-relaxed text-slate-700">
-                Resume rewrites, LinkedIn optimization, and practical mentorship
-                for students who want a real recruiting edge.
+              <p className="max-w-2xl text-lg leading-relaxed text-slate-200/90">
+                Turn ambition into offers with sharp resumes, strategic
+                positioning, and execution-level coaching built for today&apos;s
+                recruiting market.
               </p>
               <div className="flex flex-wrap gap-3">
                 <a
                   href="#contact"
-                  className="inline-flex items-center gap-2 rounded-full bg-[#12233f] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0d1a2f]"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#2d5bff] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#224ee8]"
                 >
                   Book a Free 15-Min Call
                   <ArrowRight className="h-4 w-4" />
                 </a>
                 <a
                   href="#services"
-                  className="inline-flex items-center rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-800 transition hover:border-[#12233f]/35 hover:text-[#12233f]"
+                  className="inline-flex items-center rounded-full border border-slate-500/60 bg-transparent px-6 py-3 text-sm font-semibold text-slate-100 transition hover:border-slate-300 hover:text-white"
                 >
                   See Services
                 </a>
@@ -414,30 +418,30 @@ export default function Home() {
 
         <section id="how-it-works" className="mx-auto max-w-6xl px-6 py-20 sm:py-24">
           <div data-reveal className="scroll-reveal">
-            <p className="text-sm font-semibold uppercase tracking-[0.15em] text-slate-500">
+            <p className="text-sm font-semibold uppercase tracking-[0.15em] text-slate-300">
               How It Works
             </p>
-            <h2 className="mt-3 text-3xl font-semibold text-[#12233f] sm:text-4xl">
-              Simple process. Stronger outcomes.
+            <h2 className="mt-3 max-w-3xl text-3xl font-semibold text-white sm:text-4xl">
+              Let&apos;s turn your biggest opportunities into your next big
+              moves.
             </h2>
           </div>
           <div className="mt-10 grid gap-5 md:grid-cols-3">
-            {processSteps.map(({ title, description, icon: Icon }, index) => (
+            {processSteps.map(({ title, description, icon: Icon, visualClass }) => (
               <article
                 key={title}
                 data-reveal
-                className="scroll-reveal rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/70"
+                className="scroll-reveal rounded-2xl border border-slate-700/70 bg-[#0d203b]/80 p-5 shadow-xl shadow-black/30 backdrop-blur-sm"
               >
-                <div className="mb-4 flex items-center gap-3">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#12233f] text-white">
+                <div
+                  className={`mb-4 flex h-28 items-end rounded-xl bg-gradient-to-br p-4 ${visualClass}`}
+                >
+                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/35 text-white">
                     <Icon className="h-5 w-5" />
                   </span>
-                  <span className="text-sm font-semibold text-slate-500">
-                    Step {index + 1}
-                  </span>
                 </div>
-                <h3 className="text-xl font-semibold text-[#12233f]">{title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                <h3 className="text-xl font-semibold text-white">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-300">
                   {description}
                 </p>
               </article>
@@ -454,7 +458,7 @@ export default function Home() {
               <h2 className="mt-3 text-3xl font-semibold text-[#12233f] sm:text-4xl">
                 Pick the support level that fits your goals.
               </h2>
-              <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+              <p className="mt-4 rounded-xl border border-[#2d5bff]/50 bg-[#eef3ff] px-4 py-3 text-sm text-[#12388a]">
                 Verified students get <span className="font-semibold">50% off</span>.
                 To receive discounted pricing, contact through your{" "}
                 <span className="font-semibold">.edu email</span> for verification.
@@ -468,14 +472,14 @@ export default function Home() {
                   data-reveal
                   className={`scroll-reveal flex h-full flex-col rounded-2xl border p-6 shadow-sm transition ${
                     tier.popular
-                      ? "border-amber-300 bg-amber-50/60 shadow-amber-200/60"
+                      ? "border-[#2d5bff]/35 bg-[#eef3ff]"
                       : "border-slate-200 bg-stone-50 shadow-slate-200/70"
                   }`}
                 >
                   <div className="mb-4 flex items-start justify-between gap-4">
                     <h3 className="text-xl font-semibold text-[#12233f]">{tier.title}</h3>
                     {tier.popular && (
-                      <span className="rounded-full bg-amber-400 px-2.5 py-1 text-xs font-semibold text-slate-950">
+                      <span className="rounded-full bg-[#2d5bff] px-2.5 py-1 text-xs font-semibold text-white">
                         Most Popular
                       </span>
                     )}
@@ -543,7 +547,7 @@ export default function Home() {
             </p>
             <a
               href="#contact"
-              className="mt-7 inline-flex items-center gap-2 rounded-full bg-amber-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-300"
+              className="mt-7 inline-flex items-center gap-2 rounded-full bg-[#2d5bff] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#224ee8]"
             >
               Book a Workshop
               <ArrowRight className="h-4 w-4" />
@@ -834,19 +838,19 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="bg-amber-400 py-14">
+        <section className="bg-[#12388a] py-14">
           <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-6 sm:flex-row sm:items-center">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.15em] text-slate-800">
+              <p className="text-sm font-semibold uppercase tracking-[0.15em] text-slate-200">
                 Final CTA
               </p>
-              <h2 className="mt-2 text-3xl font-semibold text-slate-900 sm:text-4xl">
+              <h2 className="mt-2 text-3xl font-semibold text-white sm:text-4xl">
                 Ready to level up your resume?
               </h2>
             </div>
             <a
               href="#contact"
-              className="inline-flex items-center gap-2 rounded-full bg-[#12233f] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0d1a2f]"
+              className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#12388a] transition hover:bg-slate-100"
             >
               Contact for Services
               <ArrowRight className="h-4 w-4" />
@@ -903,10 +907,7 @@ export default function Home() {
 
       <style jsx global>{`
         .tech-theme {
-          background:
-            radial-gradient(circle at 20% -10%, rgba(56, 189, 248, 0.24), transparent 32%),
-            radial-gradient(circle at 90% 0%, rgba(251, 191, 36, 0.16), transparent 28%),
-            linear-gradient(180deg, #050912 0%, #070d1c 45%, #060b16 100%);
+          background: #071a30;
           color: #e8efff;
         }
 
@@ -930,79 +931,6 @@ export default function Home() {
         .tech-theme main > * {
           position: relative;
           z-index: 1;
-        }
-
-        .tech-theme h1,
-        .tech-theme h2,
-        .tech-theme h3 {
-          color: #f4f8ff !important;
-          letter-spacing: -0.01em;
-        }
-
-        .tech-theme [class*="text-slate-900"],
-        .tech-theme [class*="text-slate-800"] {
-          color: #ecf2ff !important;
-        }
-
-        .tech-theme [class*="text-slate-700"],
-        .tech-theme [class*="text-slate-600"] {
-          color: #b7c5e2 !important;
-        }
-
-        .tech-theme [class*="text-slate-500"] {
-          color: #96a6c7 !important;
-        }
-
-        .tech-theme [class*="text-\\[\\#12233f\\]"] {
-          color: #e6efff !important;
-        }
-
-        .tech-theme [class*="bg-white"],
-        .tech-theme [class*="bg-stone-50"],
-        .tech-theme [class*="bg-amber-50"] {
-          background: linear-gradient(
-            145deg,
-            rgba(18, 32, 62, 0.82),
-            rgba(9, 17, 36, 0.8)
-          ) !important;
-          backdrop-filter: blur(14px);
-        }
-
-        .tech-theme [class*="border-slate-200"],
-        .tech-theme [class*="border-slate-300"],
-        .tech-theme [class*="border-slate-700"] {
-          border-color: rgba(125, 157, 214, 0.28) !important;
-        }
-
-        .tech-theme [class*="shadow-slate-200"],
-        .tech-theme [class*="shadow-amber-200"] {
-          box-shadow: 0 18px 44px rgba(2, 8, 23, 0.38) !important;
-        }
-
-        .tech-theme [class*="bg-\\[\\#12233f\\]"] {
-          background: linear-gradient(135deg, #2563eb, #1e3a8a) !important;
-        }
-
-        .tech-theme [class*="bg-amber-400"] {
-          background: linear-gradient(135deg, #f4c15f, #e8a11b) !important;
-          color: #111827 !important;
-        }
-
-        .tech-theme [class*="bg-\\[\\#0f1d36\\]"] {
-          background: linear-gradient(145deg, #0a162f, #070e1f) !important;
-        }
-
-        .tech-theme input,
-        .tech-theme select,
-        .tech-theme textarea {
-          color: #e9f0ff !important;
-          border-color: rgba(125, 157, 214, 0.34) !important;
-          background: rgba(8, 15, 30, 0.72) !important;
-        }
-
-        .tech-theme input::placeholder,
-        .tech-theme textarea::placeholder {
-          color: #8ea0c6 !important;
         }
 
         @keyframes ticker-scroll {
@@ -1057,13 +985,13 @@ function CompanyTicker({ companies }: { companies: string[] }) {
   );
 
   return (
-    <div className="marquee-wrapper rounded-2xl border border-slate-200 bg-white/95 px-4 py-4 shadow-sm shadow-slate-200/70 sm:px-6">
+    <div className="marquee-wrapper rounded-2xl border border-slate-600/70 bg-[#0d2340]/80 px-4 py-4 shadow-xl shadow-black/30 backdrop-blur sm:px-6">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm font-semibold text-[#12233f]">
+        <p className="text-sm font-semibold text-slate-100">
           Clients have interviewed at:
         </p>
         <p
-          className="inline-flex items-center gap-1.5 text-xs text-slate-500"
+          className="inline-flex items-center gap-1.5 text-xs text-slate-300"
           title="Company names shown with client permission."
         >
           <Info className="h-3.5 w-3.5" />
@@ -1075,7 +1003,7 @@ function CompanyTicker({ companies }: { companies: string[] }) {
           {doubledCompanies.map((company, index) => (
             <span
               key={`${company}-${index}`}
-              className="whitespace-nowrap rounded-full border border-slate-200 bg-stone-50 px-3 py-1 text-sm text-slate-700"
+              className="whitespace-nowrap rounded-full border border-slate-500/70 bg-[#132b4b]/90 px-3 py-1 text-sm text-slate-100"
             >
               {company}
             </span>
