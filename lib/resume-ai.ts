@@ -32,7 +32,7 @@ function buildTrainingContext(examples: TrainingExample[]): string {
 }
 
 function buildPrompt(intake: IntakeData, trainingContext: string): string {
-  return `You are an expert resume writer for ZF Resumes, a Philadelphia-based career coaching studio that helps students and early-career professionals land interviews at elite firms like McKinsey, KPMG, FTI Consulting, and others.
+  return `You are an expert resume writer for Zach's Career Studio, a Philadelphia-based career coaching studio that helps students and early-career professionals land interviews at elite firms like McKinsey, KPMG, FTI Consulting, and others.
 
 ${trainingContext}
 

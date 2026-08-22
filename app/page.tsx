@@ -198,7 +198,7 @@ const faqs = [
   },
 ];
 
-const BUSINESS_EMAIL = "your-business-email@example.com";
+const BUSINESS_EMAIL = "hello@zachscareerstudio.com";
 const defaultContactInterest = servicePricing[1]?.title ?? "Resume Refresh";
 
 export default function Home() {
@@ -278,7 +278,7 @@ export default function Home() {
       <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-stone-50/95 backdrop-blur">
         <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-6">
           <a href="#" className="text-lg font-semibold tracking-tight text-[#12233f]">
-            LaunchLedger Careers
+            Zach&apos;s Career Studio
           </a>
 
           <nav className="hidden items-center gap-8 md:flex">
@@ -781,7 +781,7 @@ export default function Home() {
       <footer className="border-t border-slate-200 bg-[#0f1d36] text-slate-100">
         <div className="mx-auto grid max-w-6xl gap-10 px-6 py-10 md:grid-cols-[1fr_auto_auto]">
           <div>
-            <h2 className="text-lg font-semibold">LaunchLedger Careers</h2>
+            <h2 className="text-lg font-semibold">Zach&apos;s Career Studio</h2>
             <p className="mt-2 max-w-sm text-sm leading-relaxed text-slate-300">
               Practical resume, LinkedIn, and mentorship support for students
               and student organizations.
@@ -819,7 +819,7 @@ export default function Home() {
           </div>
         </div>
         <div className="border-t border-slate-800/70 py-4 text-center text-xs text-slate-400">
-          &copy; {year} LaunchLedger Careers. Company names shown with client
+          &copy; {year} Zach&apos;s Career Studio. Company names shown with client
           permission.
         </div>
       </footer>

@@ -1,6 +1,6 @@
-# ZF Resumes Website
+# Zach's Career Studio Website
 
-A high-end, modern marketing website for **ZF Resumes**, built with:
+A high-end, modern marketing website for **Zach's Career Studio**, built with:
 
 - Next.js (App Router)
 - Tailwind CSS

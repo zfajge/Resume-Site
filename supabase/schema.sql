@@ -1,4 +1,4 @@
--- ZF Resumes database schema for Supabase
+-- Zach's Career Studio database schema for Supabase
 -- Run this in the Supabase SQL Editor (https://supabase.com/dashboard → SQL Editor)
 
 -- Training examples: uploaded .docx files used to teach the AI formatting style

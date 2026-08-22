@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LaunchLedger Careers | Resume, LinkedIn & Mentorship",
+  title: "Zach's Career Studio | Resume, LinkedIn & Mentorship",
   description:
     "Modern career services for college students and student organizations, including resume rewrites, LinkedIn optimization, and mentorship workshops.",
 };
