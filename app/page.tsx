@@ -1,6 +1,7 @@
 "use client";
 
 import { type FormEvent, useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import {
   ArrowRight,
   BriefcaseBusiness,
@@ -641,10 +642,12 @@ export default function Home() {
             >
               <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-200/70">
                 {!founderImageMissing ? (
-                  <img
+                  <Image
                     src="/zach-headshot.jpg"
                     alt="Zach in suit and tie"
                     className="aspect-[4/5] w-full rounded-xl object-cover"
+                    width={800}
+                    height={1000}
                     onError={() => setFounderImageMissing(true)}
                   />
                 ) : (
