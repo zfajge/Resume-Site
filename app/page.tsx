@@ -301,8 +301,8 @@ export default function Home() {
   const year = new Date().getFullYear();
 
   return (
-    <div className="min-h-screen bg-stone-50 text-slate-900">
-      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-stone-50/95 backdrop-blur">
+    <div className="tech-theme min-h-screen bg-[#060b16] text-slate-100">
+      <header className="sticky top-0 z-40 border-b border-slate-700/70 bg-[#091227]/80 backdrop-blur-xl">
         <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-6">
           <a href="#" className="text-lg font-semibold tracking-tight text-[#12233f]">
             Zach&apos;s Career Studio
@@ -366,7 +366,7 @@ export default function Home() {
 
       <main>
         <section className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_#e2ebff_0%,_#f7f8f4_48%,_#f7f8f4_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.28)_0%,_rgba(15,23,42,0.45)_44%,_rgba(2,6,23,0.98)_100%)]" />
           <div className="relative mx-auto max-w-6xl px-6 pb-14 pt-16 sm:pb-20 sm:pt-24">
             <div data-reveal className="scroll-reveal max-w-3xl space-y-7">
               <p className="inline-flex items-center gap-2 rounded-full border border-[#12233f]/15 bg-white/80 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-[#12233f]">
@@ -893,6 +893,109 @@ export default function Home() {
       </footer>
 
       <style jsx global>{`
+        .tech-theme {
+          background:
+            radial-gradient(circle at 20% -10%, rgba(56, 189, 248, 0.24), transparent 32%),
+            radial-gradient(circle at 90% 0%, rgba(251, 191, 36, 0.16), transparent 28%),
+            linear-gradient(180deg, #050912 0%, #070d1c 45%, #060b16 100%);
+          color: #e8efff;
+        }
+
+        .tech-theme main {
+          position: relative;
+        }
+
+        .tech-theme main::before {
+          content: "";
+          position: fixed;
+          inset: 0;
+          pointer-events: none;
+          background-image:
+            linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+          background-size: 48px 48px;
+          mask-image: radial-gradient(circle at center, black 30%, transparent 90%);
+          z-index: 0;
+        }
+
+        .tech-theme main > * {
+          position: relative;
+          z-index: 1;
+        }
+
+        .tech-theme h1,
+        .tech-theme h2,
+        .tech-theme h3 {
+          color: #f4f8ff !important;
+          letter-spacing: -0.01em;
+        }
+
+        .tech-theme [class*="text-slate-900"],
+        .tech-theme [class*="text-slate-800"] {
+          color: #ecf2ff !important;
+        }
+
+        .tech-theme [class*="text-slate-700"],
+        .tech-theme [class*="text-slate-600"] {
+          color: #b7c5e2 !important;
+        }
+
+        .tech-theme [class*="text-slate-500"] {
+          color: #96a6c7 !important;
+        }
+
+        .tech-theme [class*="text-\\[\\#12233f\\]"] {
+          color: #e6efff !important;
+        }
+
+        .tech-theme [class*="bg-white"],
+        .tech-theme [class*="bg-stone-50"],
+        .tech-theme [class*="bg-amber-50"] {
+          background: linear-gradient(
+            145deg,
+            rgba(18, 32, 62, 0.82),
+            rgba(9, 17, 36, 0.8)
+          ) !important;
+          backdrop-filter: blur(14px);
+        }
+
+        .tech-theme [class*="border-slate-200"],
+        .tech-theme [class*="border-slate-300"],
+        .tech-theme [class*="border-slate-700"] {
+          border-color: rgba(125, 157, 214, 0.28) !important;
+        }
+
+        .tech-theme [class*="shadow-slate-200"],
+        .tech-theme [class*="shadow-amber-200"] {
+          box-shadow: 0 18px 44px rgba(2, 8, 23, 0.38) !important;
+        }
+
+        .tech-theme [class*="bg-\\[\\#12233f\\]"] {
+          background: linear-gradient(135deg, #2563eb, #1e3a8a) !important;
+        }
+
+        .tech-theme [class*="bg-amber-400"] {
+          background: linear-gradient(135deg, #f4c15f, #e8a11b) !important;
+          color: #111827 !important;
+        }
+
+        .tech-theme [class*="bg-\\[\\#0f1d36\\]"] {
+          background: linear-gradient(145deg, #0a162f, #070e1f) !important;
+        }
+
+        .tech-theme input,
+        .tech-theme select,
+        .tech-theme textarea {
+          color: #e9f0ff !important;
+          border-color: rgba(125, 157, 214, 0.34) !important;
+          background: rgba(8, 15, 30, 0.72) !important;
+        }
+
+        .tech-theme input::placeholder,
+        .tech-theme textarea::placeholder {
+          color: #8ea0c6 !important;
+        }
+
         @keyframes ticker-scroll {
           from {
             transform: translateX(0);
