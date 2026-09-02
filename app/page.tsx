@@ -245,15 +245,16 @@ export default function Home() {
             <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
               <div className="space-y-7">
                 <h1 className="text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">
-                  Land more interviews at elite firms like
-                  <span className="text-cyan-300"> McKinsey </span>
-                  and
-                  <span className="text-cyan-300"> KPMG</span>.
+                  Landing the interview is the hardest part, let me get you
+                  there.
                 </h1>
                 <p className="max-w-2xl text-lg leading-relaxed text-slate-200">
-                  ZF Resumes helps Philadelphia students and early-career
-                  professionals stand out with ATS-optimized resumes, LinkedIn
-                  strategy, and coaching built for real hiring outcomes.
+                  I help Philadelphia students and early-career professionals
+                  improve resumes and LinkedIn profiles through coaching that
+                  also covers career strategy beyond the page: which student
+                  organizations to join, how to align your goals and interests,
+                  and how to build leadership roles that strengthen every
+                  application.
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <a
@@ -301,8 +302,10 @@ export default function Home() {
           </div>
           <p className="mb-10 max-w-3xl text-slate-300">
             Built for students, recent graduates, and organizations across
-            Philadelphia and Southern New Jersey. Individual services include
-            one-on-one strategy and fast turnaround. Group workshops are priced
+            Philadelphia and Southern New Jersey. One-on-one meetings include
+            resume and LinkedIn strategy plus guidance on the decisions that
+            shape your candidacy, including organization involvement, goal
+            clarity, and leadership development. Group workshops are priced
             separately and do not include student discount rates.
           </p>
 
