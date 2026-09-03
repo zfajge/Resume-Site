@@ -245,8 +245,8 @@ export default function Home() {
             <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
               <div className="space-y-7">
                 <h1 className="text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">
-                  Landing the interview is the hardest part, let me get you
-                  there.
+                  Landing the interview is the hardest part. I&apos;ll help you
+                  get there.
                 </h1>
                 <p className="max-w-2xl text-lg leading-relaxed text-slate-200">
                   I help Philadelphia students and early-career professionals
